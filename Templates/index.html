@@ -4,11 +4,8 @@
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>EdgeSpam-IoT</title>
-
+    <title>EdgeSpam-IoT | Admin Portal</title>
 
     <style>
 
@@ -16,623 +13,911 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
-
 
         body {
-
             min-height: 100vh;
-
-            background:
-                linear-gradient(135deg, #0f172a, #1e293b);
-
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             padding: 30px 20px;
-
+            color: #334155;
         }
 
+        /* --------------------------------------------------
+           COMMON CARD & CONTAINER
+        -------------------------------------------------- */
 
         .container {
-
             width: 100%;
-
-            max-width: 900px;
-
+            max-width: 960px;
             margin: auto;
-
             background: white;
-
             border-radius: 20px;
-
             padding: 35px;
-
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.3);
-
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        h1 {
+        /* --------------------------------------------------
+           LOGIN VIEW
+        -------------------------------------------------- */
 
-            text-align: center;
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 60px);
+        }
 
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .login-card h1 {
             color: #0f172a;
-
-            margin-bottom: 8px;
-
+            font-size: 26px;
+            margin-bottom: 6px;
+            text-align: left;
         }
 
-
-        .subtitle {
-
-            text-align: center;
-
+        .login-card .subtitle {
             color: #64748b;
-
-            margin-bottom: 30px;
-
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: left;
         }
 
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-        /* DASHBOARD */
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #0f172a;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .login-error {
+            display: none;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            margin-top: 6px;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:active {
+            transform: scale(0.99);
+        }
+
+        .demo-credentials {
+            margin-top: 25px;
+            padding: 12px 14px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .demo-credentials strong {
+            color: #0f172a;
+        }
+
+        /* --------------------------------------------------
+           NAVBAR (AFTER LOGIN)
+        -------------------------------------------------- */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 22px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand h2 {
+            font-size: 22px;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-pill {
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 12px;
+            border: 1px solid #bfdbfe;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 9px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+
+        .nav-btn.active {
+            color: #2563eb;
+            background: #eff6ff;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        /* --------------------------------------------------
+           DASHBOARD VIEW
+        -------------------------------------------------- */
+
+        .view-header {
+            margin-bottom: 25px;
+        }
+
+        .view-header h1 {
+            font-size: 24px;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .view-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
 
         .dashboard {
-
             display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-
             margin-bottom: 30px;
-
         }
-
 
         .card {
-
             background: #f8fafc;
-
             border: 1px solid #e2e8f0;
-
             border-radius: 14px;
-
-            padding: 18px 10px;
-
+            padding: 20px 14px;
             text-align: center;
-
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+        }
 
         .card-title {
-
             font-size: 13px;
-
+            font-weight: 600;
             color: #64748b;
-
             margin-bottom: 8px;
-
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
 
         .card-value {
-
-            font-size: 27px;
-
-            font-weight: bold;
-
+            font-size: 28px;
+            font-weight: 800;
             color: #0f172a;
-
         }
 
+        .spam-card .card-value { color: #dc2626; }
+        .ham-card .card-value { color: #16a34a; }
+        .average-card .card-value { color: #2563eb; }
 
-        .spam-card .card-value {
-
-            color: #dc2626;
-
+        .dashboard-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-
-        .ham-card .card-value {
-
-            color: #16a34a;
-
-        }
-
-
-        .average-card .card-value {
-
-            color: #2563eb;
-
-        }
-
-
-        label {
-
-            display: block;
-
-            font-weight: bold;
-
-            margin-bottom: 10px;
-
-            color: #334155;
-
-        }
-
-
-        textarea {
-
-            width: 100%;
-
-            height: 150px;
-
-            resize: none;
-
-            border: 2px solid #cbd5e1;
-
-            border-radius: 12px;
-
-            padding: 15px;
-
-            font-size: 16px;
-
-            outline: none;
-
-        }
-
-
-        textarea:focus {
-
-            border-color: #2563eb;
-
-        }
-
-
-        button {
-
-            width: 100%;
-
-            margin-top: 18px;
-
-            padding: 15px;
-
-            border: none;
-
-            border-radius: 12px;
-
-            background: #2563eb;
-
-            color: white;
-
-            font-size: 17px;
-
-            font-weight: bold;
-
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        .action-btn-primary {
+            background: #2563eb;
+            color: white;
+        }
 
-        button:hover {
-
+        .action-btn-primary:hover {
             background: #1d4ed8;
-
         }
 
+        .action-btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
 
-        button:disabled {
+        .action-btn-secondary:hover {
+            background: #e2e8f0;
+        }
 
+        .action-btn-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .action-btn-danger:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* --------------------------------------------------
+           SPAM DETECTION VIEW
+        -------------------------------------------------- */
+
+        label.input-label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        textarea#message {
+            width: 100%;
+            height: 120px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            font-size: 14px;
+            color: #0f172a;
+            resize: none;
+            outline: none;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            line-height: 1.5;
+        }
+
+        textarea#message:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        button#checkButton {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        button#checkButton:hover {
+            background: #1d4ed8;
+        }
+
+        button#checkButton:disabled {
             background: #94a3b8;
-
             cursor: not-allowed;
-
         }
 
+        /* --------------------------------------------------
+           RESULT CARD
+        -------------------------------------------------- */
 
         #result {
-
-            margin-top: 25px;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            background: #f1f5f9;
-
             display: none;
-
+            margin-top: 24px;
+            padding: 22px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
             text-align: center;
-
+            animation: fadeIn 0.3s ease-in-out;
         }
-
 
         #classification {
-
-            font-size: 28px;
-
-            font-weight: bold;
-
-            margin-bottom: 10px;
-
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
         }
-
 
         #probability {
-
-            font-size: 18px;
-
+            font-size: 15px;
             color: #475569;
-
-            margin-bottom: 10px;
-
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-
 
         #status-message {
-
-            font-size: 15px;
-
+            font-size: 13px;
             color: #64748b;
-
         }
 
+        /* --------------------------------------------------
+           HISTORY TABLE
+        -------------------------------------------------- */
 
-        .history-title {
+        .history-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
 
-            margin-top: 35px;
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-            margin-bottom: 15px;
-
+        .history-card-header h3 {
+            font-size: 16px;
             color: #0f172a;
-
         }
-
 
         .history {
-
-            width: 100%;
-
-            overflow-x: auto;
-
+            max-height: 420px;
+            overflow-y: auto;
         }
-
 
         table {
-
             width: 100%;
-
             border-collapse: collapse;
-
-            font-size: 14px;
-
+            font-size: 13px;
         }
 
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
 
         th {
-
-            background: #0f172a;
-
-            color: white;
-
-            padding: 12px;
-
-            text-align: left;
-
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
 
-
-        td {
-
-            padding: 12px;
-
-            border-bottom: 1px solid #e2e8f0;
-
-            vertical-align: top;
-
-        }
-
-
-        .spam {
-
+        td.spam {
             color: #dc2626;
-
-            font-weight: bold;
-
+            font-weight: 700;
         }
 
-
-        .ham {
-
+        td.ham {
             color: #16a34a;
-
-            font-weight: bold;
-
+            font-weight: 700;
         }
 
-
-        .time {
-
+        td.time {
             color: #64748b;
-
+            font-size: 12px;
             white-space: nowrap;
-
         }
 
+        td.loading {
+            text-align: center;
+            color: #94a3b8;
+            padding: 30px;
+            font-style: italic;
+        }
 
         .clear-button {
-
-            background: #64748b;
-
+            width: 100%;
+            padding: 12px;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
             margin-top: 15px;
-
         }
-
 
         .clear-button:hover {
-
-            background: #475569;
-
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
         }
 
+        /* --------------------------------------------------
+           FOOTER
+        -------------------------------------------------- */
 
         .footer {
-
+            margin-top: 30px;
             text-align: center;
-
-            margin-top: 25px;
-
             color: #94a3b8;
-
-            font-size: 13px;
-
+            font-size: 12px;
+            font-weight: 500;
         }
 
+        /* --------------------------------------------------
+           RESPONSIVE
+        -------------------------------------------------- */
 
-        .loading {
-
-            text-align: center;
-
-            color: #64748b;
-
-            padding: 15px;
-
-        }
-
-
-        /* MOBILE */
-
-        @media (max-width: 700px) {
-
+        @media (max-width: 768px) {
             .dashboard {
-
-                grid-template-columns:
-                    repeat(2, 1fr);
-
+                grid-template-columns: repeat(2, 1fr);
             }
-
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
         }
 
-
-        @media (max-width: 450px) {
-
+        @media (max-width: 480px) {
             .dashboard {
-
                 grid-template-columns: 1fr;
-
             }
-
+            .container {
+                padding: 22px 18px;
+            }
         }
 
     </style>
 
 </head>
 
-
 <body>
 
+    <!-- ==================================================
+         LOGIN VIEW
+    ================================================== -->
+    <div id="loginView" class="login-wrapper">
+        <div class="login-card">
+            <span class="brand-badge">EdgeSpam-IoT Portal</span>
+            <h1>Administrator Sign In</h1>
+            <p class="subtitle">Access the SMS spam monitoring & detection console</p>
 
-    <div class="container">
-
-
-        <h1>EdgeSpam-IoT</h1>
-
-
-        <p class="subtitle">
-
-            AI-Based SMS Spam Detection
-
-        </p>
-
-
-        <!-- DASHBOARD -->
-
-        <div class="dashboard">
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Total Predictions
-                </div>
-
-                <div
-                    class="card-value"
-                    id="totalCount">
-
-                    0
-
-                </div>
-
+            <div id="loginError" class="login-error">
+                Invalid username or password.
             </div>
 
-
-            <div class="card spam-card">
-
-                <div class="card-title">
-                    SPAM Messages
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input
+                        type="text"
+                        id="loginUsername"
+                        class="form-control"
+                        placeholder="Enter username"
+                        autocomplete="username"
+                        required
+                    />
                 </div>
 
-                <div
-                    class="card-value"
-                    id="spamCount">
-
-                    0
-
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        class="form-control"
+                        placeholder="Enter password"
+                        autocomplete="current-password"
+                        required
+                    />
                 </div>
 
+                <button type="submit" id="loginBtn" class="login-btn">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="demo-credentials">
+                Demo Credentials: Username: <strong>admin</strong> | Password: <strong>admin123</strong>
             </div>
+        </div>
+    </div>
 
+    <!-- ==================================================
+         AUTHENTICATED APP VIEW
+    ================================================== -->
+    <div id="appView" style="display: none;">
 
-            <div class="card ham-card">
+        <div class="container">
 
-                <div class="card-title">
-                    HAM Messages
+            <!-- NAVIGATION HEADER -->
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <h2>EdgeSpam-IoT</h2>
+                    <span class="admin-pill">Admin</span>
                 </div>
 
-                <div
-                    class="card-value"
-                    id="hamCount">
+                <div class="nav-links">
+                    <button id="navDashboard" class="nav-btn active" onclick="switchTab('dashboard')">
+                        Dashboard
+                    </button>
+                    <button id="navDetection" class="nav-btn" onclick="switchTab('detection')">
+                        Spam Detection
+                    </button>
+                    <button id="navHistory" class="nav-btn" onclick="switchTab('history')">
+                        History
+                    </button>
+                    <button id="navLogout" class="logout-btn" onclick="handleLogout()">
+                        Logout
+                    </button>
+                </div>
+            </nav>
 
-                    0
-
+            <!-- ==================================================
+                 TAB 1: ADMIN DASHBOARD
+            ================================================== -->
+            <section id="viewDashboard">
+                <div class="view-header">
+                    <h1>Admin Dashboard</h1>
+                    <p>Real-time system overview, metrics, and recent SMS spam classifications</p>
                 </div>
 
-            </div>
-
-
-            <div class="card average-card">
-
-                <div class="card-title">
-                    Avg. Spam Probability
+                <!-- 4 METRIC CARDS -->
+                <div class="dashboard">
+                    <div class="card">
+                        <div class="card-title">Total Predictions</div>
+                        <div class="card-value" id="totalCount">0</div>
+                    </div>
+                    <div class="card spam-card">
+                        <div class="card-title">Total SPAM</div>
+                        <div class="card-value" id="spamCount">0</div>
+                    </div>
+                    <div class="card ham-card">
+                        <div class="card-title">Total HAM</div>
+                        <div class="card-value" id="hamCount">0</div>
+                    </div>
+                    <div class="card average-card">
+                        <div class="card-title">Avg. Spam Probability</div>
+                        <div class="card-value" id="averageProbability">0%</div>
+                    </div>
                 </div>
 
-                <div
-                    class="card-value"
-                    id="averageProbability">
-
-                    0%
-
+                <!-- DASHBOARD QUICK ACTIONS -->
+                <div class="dashboard-actions">
+                    <button class="action-btn action-btn-primary" onclick="switchTab('detection')">
+                        + New SMS Prediction
+                    </button>
+                    <button class="action-btn action-btn-secondary" onclick="switchTab('history')">
+                        View Full History
+                    </button>
+                    <button class="action-btn action-btn-danger" onclick="clearHistory()">
+                        Clear All History
+                    </button>
                 </div>
 
+                <!-- RECENT PREDICTIONS OVERVIEW -->
+                <div class="history-card">
+                    <div class="history-card-header">
+                        <h3>Recent Predictions</h3>
+                        <a href="javascript:void(0)" onclick="switchTab('history')" style="color: #2563eb; font-size: 13px; font-weight: 700; text-decoration: none;">
+                            View All &rarr;
+                        </a>
+                    </div>
+                    <div class="history" style="max-height: 280px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>SMS Message</th>
+                                    <th>Classification</th>
+                                    <th>Probability</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentHistoryBody">
+                                <tr>
+                                    <td colspan="4" class="loading">No predictions recorded yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================================================
+                 TAB 2: SPAM DETECTION
+            ================================================== -->
+            <section id="viewDetection" style="display: none;">
+                <div class="view-header">
+                    <h1>SMS Spam Detection</h1>
+                    <p>Enter any SMS message to classify it using the on-device / serverless ML model</p>
+                </div>
+
+                <label class="input-label" for="message">Enter SMS Message</label>
+                <textarea
+                    id="message"
+                    placeholder="Example: Congratulations! You have won a £1,000 cash prize. Text CLAIM to 88888 to receive your reward..."></textarea>
+
+                <button id="checkButton" onclick="checkSMS()">Check SMS</button>
+
+                <div id="result">
+                    <div id="classification"></div>
+                    <div id="probability"></div>
+                    <div id="status-message"></div>
+                </div>
+            </section>
+
+            <!-- ==================================================
+                 TAB 3: PREDICTION HISTORY
+            ================================================== -->
+            <section id="viewHistory" style="display: none;">
+                <div class="view-header">
+                    <h1>Prediction History</h1>
+                    <p>Complete historical log of all SMS messages classified by the system</p>
+                </div>
+
+                <div class="history-card">
+                    <div class="history">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>SMS Message</th>
+                                    <th>Result</th>
+                                    <th>Probability</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <tr>
+                                    <td colspan="4" class="loading">Loading history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button class="clear-button" onclick="clearHistory()">Clear History</button>
+            </section>
+
+            <div class="footer">
+                EdgeSpam-IoT • Machine Learning & Edge Computing Project
             </div>
 
         </div>
-
-
-        <!-- SMS INPUT -->
-
-        <label for="message">
-
-            Enter SMS Message
-
-        </label>
-
-
-        <textarea
-            id="message"
-            placeholder="Example: Congratulations! You have won a prize..."></textarea>
-
-
-        <button
-            id="checkButton"
-            onclick="checkSMS()">
-
-            Check SMS
-
-        </button>
-
-
-        <!-- RESULT -->
-
-        <div id="result">
-
-            <div id="classification"></div>
-
-            <div id="probability"></div>
-
-            <div id="status-message"></div>
-
-        </div>
-
-
-        <!-- HISTORY -->
-
-        <h2 class="history-title">
-
-            Prediction History
-
-        </h2>
-
-
-        <div class="history">
-
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>SMS</th>
-
-                        <th>Result</th>
-
-                        <th>Probability</th>
-
-                        <th>Date & Time</th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="historyBody">
-
-                    <tr>
-
-                        <td
-                            colspan="4"
-                            class="loading">
-
-                            Loading history...
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-
-        </div>
-
-
-        <button
-            class="clear-button"
-            onclick="clearHistory()">
-
-            Clear History
-
-        </button>
-
-
-        <div class="footer">
-
-            Powered by Machine Learning
-
-        </div>
-
 
     </div>
 
-
+    <!-- ==================================================
+         JAVASCRIPT LOGIC
+    ================================================== -->
     <script>
-        // API Base URL (can be overridden via window.API_BASE_URL, defaults to same-origin)
+        // API Base URL (defaults to same-origin)
         const API_BASE = window.API_BASE_URL || "";
 
-        // Resilient fetch helper: tries /api/<endpoint> first, then fallback to /<endpoint>
+        // =========================================
+        // AUTHENTICATION & SESSION MANAGEMENT
+        // =========================================
+        const DEMO_USER = "admin";
+        const DEMO_PASS = "admin123";
+
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem("edgespam_auth") === "true";
+            const loginView = document.getElementById("loginView");
+            const appView = document.getElementById("appView");
+
+            if (isAuthenticated) {
+                loginView.style.display = "none";
+                appView.style.display = "block";
+                loadHistory();
+                loadStats();
+            } else {
+                loginView.style.display = "flex";
+                appView.style.display = "none";
+            }
+        }
+
+        function handleLogin() {
+            const usernameInput = document.getElementById("loginUsername");
+            const passwordInput = document.getElementById("loginPassword");
+            const errorDiv = document.getElementById("loginError");
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (username === DEMO_USER && password === DEMO_PASS) {
+                sessionStorage.setItem("edgespam_auth", "true");
+                sessionStorage.setItem("edgespam_user", username);
+                errorDiv.style.display = "none";
+                usernameInput.value = "";
+                passwordInput.value = "";
+
+                // Show app and switch to Dashboard
+                document.getElementById("loginView").style.display = "none";
+                document.getElementById("appView").style.display = "block";
+                switchTab("dashboard");
+                loadHistory();
+                loadStats();
+            } else {
+                errorDiv.style.display = "block";
+                passwordInput.value = "";
+                passwordInput.focus();
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem("edgespam_auth");
+            sessionStorage.removeItem("edgespam_user");
+
+            const errorDiv = document.getElementById("loginError");
+            if (errorDiv) errorDiv.style.display = "none";
+
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+
+            document.getElementById("appView").style.display = "none";
+            document.getElementById("loginView").style.display = "flex";
+        }
+
+        // =========================================
+        // TAB SWITCHING
+        // =========================================
+        function switchTab(tab) {
+            const viewDashboard = document.getElementById("viewDashboard");
+            const viewDetection = document.getElementById("viewDetection");
+            const viewHistory = document.getElementById("viewHistory");
+
+            const navDashboard = document.getElementById("navDashboard");
+            const navDetection = document.getElementById("navDetection");
+            const navHistory = document.getElementById("navHistory");
+
+            // Remove active from all nav buttons
+            navDashboard.classList.remove("active");
+            navDetection.classList.remove("active");
+            navHistory.classList.remove("active");
+
+            // Hide all views
+            viewDashboard.style.display = "none";
+            viewDetection.style.display = "none";
+            viewHistory.style.display = "none";
+
+            if (tab === "dashboard") {
+                viewDashboard.style.display = "block";
+                navDashboard.classList.add("active");
+                const items = getLocalHistory();
+                renderHistory(items);
+                updateDashboard(items);
+            } else if (tab === "detection") {
+                viewDetection.style.display = "block";
+                navDetection.classList.add("active");
+                document.getElementById("message").focus();
+            } else if (tab === "history") {
+                viewHistory.style.display = "block";
+                navHistory.classList.add("active");
+                const items = getLocalHistory();
+                renderHistory(items);
+            }
+        }
+
+        // =========================================
+        // RESILIENT API HELPER
+        // =========================================
         async function fetchAPI(endpoint, options = {}) {
             const urls = [
                 `${API_BASE}/api${endpoint}`,
@@ -685,19 +970,23 @@
 
         function renderHistory(items) {
             const historyBody = document.getElementById("historyBody");
-            historyBody.innerHTML = "";
+            const recentBody = document.getElementById("recentHistoryBody");
+
+            const emptyRow = `
+                <tr>
+                    <td colspan="4" class="loading">No predictions recorded yet.</td>
+                </tr>
+            `;
 
             if (!items || items.length === 0) {
-                historyBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="loading">No predictions yet.</td>
-                    </tr>
-                `;
+                if (historyBody) historyBody.innerHTML = emptyRow;
+                if (recentBody) recentBody.innerHTML = emptyRow;
                 return;
             }
 
-            items.forEach(function(item) {
+            function createRow(item) {
                 const row = document.createElement("tr");
+
                 const messageCell = document.createElement("td");
                 messageCell.textContent = item.message;
 
@@ -717,8 +1006,21 @@
                 row.appendChild(resultCell);
                 row.appendChild(probabilityCell);
                 row.appendChild(timeCell);
-                historyBody.appendChild(row);
-            });
+                return row;
+            }
+
+            // Render Full History
+            if (historyBody) {
+                historyBody.innerHTML = "";
+                items.forEach(item => historyBody.appendChild(createRow(item)));
+            }
+
+            // Render Recent 5 on Dashboard
+            if (recentBody) {
+                recentBody.innerHTML = "";
+                const recent5 = items.slice(0, 5);
+                recent5.forEach(item => recentBody.appendChild(createRow(item)));
+            }
         }
 
         function updateDashboard(items, backendStats = null) {
@@ -895,7 +1197,8 @@
             saveLocalHistory([]);
             renderHistory([]);
             updateDashboard([]);
-            document.getElementById("result").style.display = "none";
+            const resultDiv = document.getElementById("result");
+            if (resultDiv) resultDiv.style.display = "none";
 
             try {
                 await fetchAPI("/clear-history", { method: "DELETE" });
@@ -909,11 +1212,9 @@
         // PAGE LOAD
         // =========================================
         window.onload = function() {
-            loadHistory();
-            loadStats();
+            checkAuth();
         };
     </script>
-
 
 </body>
 

@@ -629,549 +629,208 @@
 
 
     <script>
+        // API Base URL (can be overridden via window.API_BASE_URL, defaults to same-origin)
+        const API_BASE = window.API_BASE_URL || "";
 
+        // Resilient fetch helper: tries /api/<endpoint> first, then fallback to /<endpoint>
+        async function fetchAPI(endpoint, options = {}) {
+            const urls = [
+                `${API_BASE}/api${endpoint}`,
+                `${API_BASE}${endpoint}`
+            ];
+
+            let lastResponse = null;
+            let lastError = null;
+
+            for (const url of urls) {
+                try {
+                    const res = await fetch(url, options);
+                    if (res.ok || res.status === 400) {
+                        return res;
+                    }
+                    lastResponse = res;
+                    if (res.status === 404 || res.status === 405) {
+                        continue;
+                    }
+                    return res;
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+
+            if (lastResponse) return lastResponse;
+            throw lastError || new Error("Failed to connect to backend");
+        }
 
         // =========================================
         // CHECK SMS
         // =========================================
-
         async function checkSMS() {
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value.trim();
 
-
-            const message =
-
-                document
-                    .getElementById("message")
-                    .value
-                    .trim();
-
-
-            if (message === "") {
-
-                alert(
-                    "Please enter an SMS message."
-                );
-
+            if (!message) {
+                alert("Please enter an SMS message.");
                 return;
-
             }
 
-
-            const button =
-
-                document
-                    .getElementById(
-                        "checkButton"
-                    );
-
-
+            const button = document.getElementById("checkButton");
             button.disabled = true;
-
-            button.textContent =
-                "Checking...";
-
+            button.textContent = "Checking...";
 
             try {
+                const response = await fetchAPI("/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: message })
+                });
 
-
-                const response =
-
-                    await fetch(
-                        "/predict",
-                        {
-
-                            method: "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body: JSON.stringify({
-
-                                message:
-                                    message
-
-                            })
-
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error("Non-JSON backend response:", response.status, text);
+                    alert(`Backend error (${response.status}): ${text.slice(0, 150) || "Invalid response"}`);
+                    return;
+                }
 
                 if (!response.ok) {
-
-                    alert(
-                        data.error ||
-                        "Prediction failed."
-                    );
-
+                    alert(data.error || `Prediction failed (HTTP ${response.status}).`);
                     return;
-
                 }
 
+                const result = document.getElementById("result");
+                const classification = document.getElementById("classification");
+                const probability = document.getElementById("probability");
+                const statusMessage = document.getElementById("status-message");
 
-                const result =
+                result.style.display = "block";
+                classification.textContent = data.classification;
+                probability.textContent = "Spam Probability: " + data.spam_probability + "%";
 
-                    document
-                        .getElementById(
-                            "result"
-                        );
-
-
-                const classification =
-
-                    document
-                        .getElementById(
-                            "classification"
-                        );
-
-
-                const probability =
-
-                    document
-                        .getElementById(
-                            "probability"
-                        );
-
-
-                const statusMessage =
-
-                    document
-                        .getElementById(
-                            "status-message"
-                        );
-
-
-                result.style.display =
-                    "block";
-
-
-                classification.textContent =
-                    data.classification;
-
-
-                probability.textContent =
-
-                    "Spam Probability: "
-                    + data.spam_probability
-                    + "%";
-
-
-                if (
-                    data.classification
-                    === "SPAM"
-                ) {
-
-
-                    classification.style.color =
-                        "#dc2626";
-
-
-                    statusMessage.textContent =
-                        "⚠️ This message may be harmful or unwanted.";
-
+                if (data.classification === "SPAM") {
+                    classification.style.color = "#dc2626";
+                    statusMessage.textContent = "⚠️ This message may be harmful or unwanted.";
+                } else {
+                    classification.style.color = "#16a34a";
+                    statusMessage.textContent = "✓ This message appears to be safe.";
                 }
 
-                else {
-
-
-                    classification.style.color =
-                        "#16a34a";
-
-
-                    statusMessage.textContent =
-                        "✓ This message appears to be safe.";
-
-                }
-
-
-                document
-                    .getElementById("message")
-                    .value = "";
-
-
-                // Update history
-
+                messageInput.value = "";
                 loadHistory();
-
-
-                // Update dashboard
-
                 loadStats();
-
-
+            } catch (error) {
+                alert("Unable to connect to the backend: " + (error.message || error));
+                console.error("Prediction error:", error);
+            } finally {
+                button.disabled = false;
+                button.textContent = "Check SMS";
             }
-
-
-            catch (error) {
-
-
-                alert(
-                    "Unable to connect to the backend."
-                );
-
-
-                console.error(error);
-
-            }
-
-
-            finally {
-
-
-                button.disabled =
-                    false;
-
-
-                button.textContent =
-                    "Check SMS";
-
-            }
-
         }
-
 
         // =========================================
         // LOAD HISTORY
         // =========================================
-
         async function loadHistory() {
-
-
-            const historyBody =
-
-                document
-                    .getElementById(
-                        "historyBody"
-                    );
-
-
+            const historyBody = document.getElementById("historyBody");
             try {
-
-
-                const response =
-
-                    await fetch(
-                        "/history"
-                    );
-
-
-                const history =
-                    await response.json();
-
-
-                historyBody.innerHTML =
-                    "";
-
-
-                if (
-                    history.length === 0
-                ) {
-
-
-                    historyBody.innerHTML = `
-
-                        <tr>
-
-                            <td
-                                colspan="4"
-                                class="loading">
-
-                                No predictions yet.
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-
+                const response = await fetchAPI("/history");
+                if (!response.ok) {
+                    console.warn("History returned HTTP status:", response.status);
                     return;
-
                 }
 
+                const history = await response.json();
+                historyBody.innerHTML = "";
 
-                history.forEach(
-                    function(item) {
+                if (!history || history.length === 0) {
+                    historyBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="loading">No predictions yet.</td>
+                        </tr>
+                    `;
+                    return;
+                }
 
+                history.forEach(function(item) {
+                    const row = document.createElement("tr");
+                    const messageCell = document.createElement("td");
+                    messageCell.textContent = item.message;
 
-                        const row =
-                            document
-                                .createElement(
-                                    "tr"
-                                );
+                    const resultCell = document.createElement("td");
+                    resultCell.textContent = item.classification;
+                    resultCell.className = item.classification === "SPAM" ? "spam" : "ham";
 
+                    const probabilityCell = document.createElement("td");
+                    probabilityCell.textContent = item.probability + "%";
 
-                        const messageCell =
-                            document
-                                .createElement(
-                                    "td"
-                                );
+                    const timeCell = document.createElement("td");
+                    timeCell.textContent = item.timestamp;
+                    timeCell.className = "time";
 
-
-                        messageCell.textContent =
-                            item.message;
-
-
-                        const resultCell =
-                            document
-                                .createElement(
-                                    "td"
-                                );
-
-
-                        resultCell.textContent =
-                            item.classification;
-
-
-                        if (
-                            item.classification
-                            === "SPAM"
-                        ) {
-
-                            resultCell.className =
-                                "spam";
-
-                        }
-
-                        else {
-
-                            resultCell.className =
-                                "ham";
-
-                        }
-
-
-                        const probabilityCell =
-                            document
-                                .createElement(
-                                    "td"
-                                );
-
-
-                        probabilityCell.textContent =
-                            item.probability
-                            + "%";
-
-
-                        const timeCell =
-                            document
-                                .createElement(
-                                    "td"
-                                );
-
-
-                        timeCell.textContent =
-                            item.timestamp;
-
-
-                        timeCell.className =
-                            "time";
-
-
-                        row.appendChild(
-                            messageCell
-                        );
-
-
-                        row.appendChild(
-                            resultCell
-                        );
-
-
-                        row.appendChild(
-                            probabilityCell
-                        );
-
-
-                        row.appendChild(
-                            timeCell
-                        );
-
-
-                        historyBody.appendChild(
-                            row
-                        );
-
-                    }
-                );
-
+                    row.appendChild(messageCell);
+                    row.appendChild(resultCell);
+                    row.appendChild(probabilityCell);
+                    row.appendChild(timeCell);
+                    historyBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("History error:", error);
             }
-
-
-            catch (error) {
-
-                console.error(
-                    "History error:",
-                    error
-                );
-
-            }
-
         }
-
 
         // =========================================
         // LOAD DASHBOARD STATISTICS
         // =========================================
-
         async function loadStats() {
-
-
             try {
+                const response = await fetchAPI("/stats");
+                if (!response.ok) {
+                    console.warn("Stats returned HTTP status:", response.status);
+                    return;
+                }
 
-
-                const response =
-
-                    await fetch(
-                        "/stats"
-                    );
-
-
-                const stats =
-                    await response.json();
-
-
-                document
-                    .getElementById(
-                        "totalCount"
-                    )
-                    .textContent =
-                    stats.total;
-
-
-                document
-                    .getElementById(
-                        "spamCount"
-                    )
-                    .textContent =
-                    stats.spam;
-
-
-                document
-                    .getElementById(
-                        "hamCount"
-                    )
-                    .textContent =
-                    stats.ham;
-
-
-                document
-                    .getElementById(
-                        "averageProbability"
-                    )
-                    .textContent =
-                    stats.average_probability
-                    + "%";
-
-
+                const stats = await response.json();
+                document.getElementById("totalCount").textContent = stats.total ?? 0;
+                document.getElementById("spamCount").textContent = stats.spam ?? 0;
+                document.getElementById("hamCount").textContent = stats.ham ?? 0;
+                document.getElementById("averageProbability").textContent = (stats.average_probability ?? 0) + "%";
+            } catch (error) {
+                console.error("Stats error:", error);
             }
-
-
-            catch (error) {
-
-                console.error(
-                    "Stats error:",
-                    error
-                );
-
-            }
-
         }
-
 
         // =========================================
         // CLEAR HISTORY
         // =========================================
-
         async function clearHistory() {
-
-
-            const confirmClear =
-
-                confirm(
-                    "Are you sure you want to clear all prediction history?"
-                );
-
-
-            if (!confirmClear) {
-
-                return;
-
-            }
-
+            const confirmClear = confirm("Are you sure you want to clear all prediction history?");
+            if (!confirmClear) return;
 
             try {
-
-
-                const response =
-
-                    await fetch(
-                        "/clear-history",
-                        {
-
-                            method: "DELETE"
-
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                alert(data.message);
-
+                const response = await fetchAPI("/clear-history", { method: "DELETE" });
+                const data = await response.json();
+                alert(data.message || "History cleared.");
 
                 loadHistory();
-
                 loadStats();
-
-
-                document
-                    .getElementById(
-                        "result"
-                    )
-                    .style.display =
-                    "none";
-
-
+                document.getElementById("result").style.display = "none";
+            } catch (error) {
+                alert("Unable to clear history: " + (error.message || error));
+                console.error("Clear history error:", error);
             }
-
-
-            catch (error) {
-
-                alert(
-                    "Unable to clear history."
-                );
-
-
-                console.error(error);
-
-            }
-
         }
-
 
         // =========================================
         // PAGE LOAD
         // =========================================
-
         window.onload = function() {
-
             loadHistory();
-
             loadStats();
-
         };
-
-
     </script>
 
 

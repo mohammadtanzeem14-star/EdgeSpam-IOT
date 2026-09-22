@@ -2,7 +2,7 @@ import os
 import sqlite3
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
-import pandas as pd
+import joblib
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.linear_model import SGDClassifier
 
@@ -15,10 +15,32 @@ app = Flask(
 )
 
 # In Vercel serverless environments, root is read-only; /tmp is writable
-if os.environ.get("VERCEL"):
+if os.environ.get("VERCEL") or not os.access(BASE_DIR, os.W_OK):
     DATABASE = "/tmp/predictions.db"
 else:
     DATABASE = os.path.join(BASE_DIR, "predictions.db")
+
+
+# --------------------------------------------------
+# CORS SUPPORT
+# --------------------------------------------------
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = app.make_default_options_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
+        return response
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
+    return response
 
 
 # --------------------------------------------------
@@ -26,44 +48,25 @@ else:
 # --------------------------------------------------
 
 def init_database():
-
-    connection = sqlite3.connect(DATABASE)
-
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS predictions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            message TEXT NOT NULL,
-            classification TEXT NOT NULL,
-            probability REAL NOT NULL,
-            timestamp TEXT NOT NULL
-        )
-    """)
-
-    connection.commit()
-    connection.close()
+    try:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS predictions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                message TEXT NOT NULL,
+                classification TEXT NOT NULL,
+                probability REAL NOT NULL,
+                timestamp TEXT NOT NULL
+            )
+        """)
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        print("Database initialization note:", e)
 
 
 init_database()
-
-
-# --------------------------------------------------
-# LOAD DATASET
-# --------------------------------------------------
-
-DATASET_PATH = os.path.join(BASE_DIR, "SMSSpamCollection")
-
-df = pd.read_csv(
-    DATASET_PATH,
-    sep="\t",
-    names=["label", "text"]
-)
-
-df["target"] = df["label"].map({
-    "ham": 0,
-    "spam": 1
-})
 
 
 # --------------------------------------------------
@@ -80,273 +83,209 @@ vectorizer = HashingVectorizer(
     token_pattern=r"(?u)\b\w\w+\b"
 )
 
-X = vectorizer.transform(df["text"])
-y = df["target"]
+# Load pre-trained model for fast cold starts
+model = None
+model_candidate_paths = [
+    os.path.join(BASE_DIR, "model.joblib"),
+    os.path.join(BASE_DIR, "api", "model.joblib"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.joblib"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "api", "model.joblib"),
+]
 
+for p in model_candidate_paths:
+    if os.path.exists(p):
+        try:
+            model = joblib.load(p)
+            print(f"Loaded model from {p}")
+            break
+        except Exception as e:
+            print(f"Error loading {p}: {e}")
 
-model = SGDClassifier(
-    loss="log_loss",
-    penalty="l1",
-    alpha=1e-4,
-    max_iter=1000,
-    random_state=42,
-    class_weight="balanced"
-)
+if model is None:
+    print("Training model from SMSSpamCollection fallback...")
+    import pandas as pd
+    DATASET_PATH = os.path.join(BASE_DIR, "SMSSpamCollection")
+    df = pd.read_csv(DATASET_PATH, sep="\t", names=["label", "text"])
+    df["target"] = df["label"].map({"ham": 0, "spam": 1})
+    X = vectorizer.transform(df["text"])
+    y = df["target"]
+    model = SGDClassifier(
+        loss="log_loss",
+        penalty="l1",
+        alpha=1e-4,
+        max_iter=1000,
+        random_state=42,
+        class_weight="balanced"
+    )
+    model.fit(X, y)
 
-model.fit(X, y)
-
-print("ML model loaded successfully!")
-print("Database initialized successfully!")
+print("ML model ready!")
 
 
 # --------------------------------------------------
-# HOME PAGE
+# ROUTES
 # --------------------------------------------------
 
 @app.route("/")
 @app.route("/api")
 @app.route("/api/")
 def home():
-
     return render_template("index.html")
 
 
-# --------------------------------------------------
-# PREDICT SMS
-# --------------------------------------------------
+@app.route("/health", methods=["GET"])
+@app.route("/api/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok", "message": "EdgeSpam backend is running"})
 
-@app.route("/predict", methods=["POST"])
-@app.route("/api/predict", methods=["POST"])
+
+@app.route("/predict", methods=["POST", "OPTIONS"])
+@app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
 
-    data = request.get_json()
-
+    data = request.get_json(silent=True)
     if not data or "message" not in data:
-
-        return jsonify({
-            "error": "Please provide an SMS message."
-        }), 400
+        return jsonify({"error": "Please provide an SMS message."}), 400
 
     message = data["message"]
-
     if not message.strip():
-
-        return jsonify({
-            "error": "SMS message cannot be empty."
-        }), 400
+        return jsonify({"error": "SMS message cannot be empty."}), 400
 
     features = vectorizer.transform([message])
-
     prediction = model.predict(features)[0]
-
     probability = model.predict_proba(features)[0][1] * 100
 
-    if prediction == 1:
-
-        classification = "SPAM"
-
-    else:
-
-        classification = "HAM"
-
+    classification = "SPAM" if prediction == 1 else "HAM"
     probability = round(probability, 2)
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    timestamp = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
-
-    # Save prediction
-
-    connection = sqlite3.connect(DATABASE)
-
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        INSERT INTO predictions
-        (message, classification, probability, timestamp)
-        VALUES (?, ?, ?, ?)
-    """, (
-        message,
-        classification,
-        probability,
-        timestamp
-    ))
-
-    connection.commit()
-    connection.close()
-
+    try:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO predictions
+            (message, classification, probability, timestamp)
+            VALUES (?, ?, ?, ?)
+        """, (message, classification, probability, timestamp))
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        print("Database save note:", e)
 
     return jsonify({
-
         "message": message,
-
         "classification": classification,
-
         "spam_probability": probability,
-
         "timestamp": timestamp
-
     })
 
 
-# --------------------------------------------------
-# GET PREDICTION HISTORY
-# --------------------------------------------------
-
-@app.route("/history", methods=["GET"])
-@app.route("/api/history", methods=["GET"])
+@app.route("/history", methods=["GET", "OPTIONS"])
+@app.route("/api/history", methods=["GET", "OPTIONS"])
 def history():
-
-    connection = sqlite3.connect(DATABASE)
-
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        SELECT id, message, classification, probability, timestamp
-        FROM predictions
-        ORDER BY id DESC
-    """)
-
-    rows = cursor.fetchall()
-
-    connection.close()
+    if request.method == "OPTIONS":
+        return jsonify([])
 
     history_data = []
-
-    for row in rows:
-
-        history_data.append({
-
-            "id": row[0],
-
-            "message": row[1],
-
-            "classification": row[2],
-
-            "probability": row[3],
-
-            "timestamp": row[4]
-
-        })
+    try:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT id, message, classification, probability, timestamp
+            FROM predictions
+            ORDER BY id DESC
+        """)
+        rows = cursor.fetchall()
+        connection.close()
+        for row in rows:
+            history_data.append({
+                "id": row[0],
+                "message": row[1],
+                "classification": row[2],
+                "probability": row[3],
+                "timestamp": row[4]
+            })
+    except Exception as e:
+        print("Database history note:", e)
 
     return jsonify(history_data)
 
 
-# --------------------------------------------------
-# DASHBOARD STATISTICS
-# --------------------------------------------------
-
-@app.route("/stats", methods=["GET"])
-@app.route("/api/stats", methods=["GET"])
+@app.route("/stats", methods=["GET", "OPTIONS"])
+@app.route("/api/stats", methods=["GET", "OPTIONS"])
 def stats():
+    if request.method == "OPTIONS":
+        return jsonify({"total": 0, "spam": 0, "ham": 0, "average_probability": 0})
 
-    connection = sqlite3.connect(DATABASE)
+    total = 0
+    spam = 0
+    ham = 0
+    average_probability = 0
 
-    cursor = connection.cursor()
+    try:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("SELECT COUNT(*) FROM predictions")
+        total = cursor.fetchone()[0]
 
+        cursor.execute("SELECT COUNT(*) FROM predictions WHERE classification = 'SPAM'")
+        spam = cursor.fetchone()[0]
 
-    # Total predictions
+        cursor.execute("SELECT COUNT(*) FROM predictions WHERE classification = 'HAM'")
+        ham = cursor.fetchone()[0]
 
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM predictions
-    """)
-
-    total = cursor.fetchone()[0]
-
-
-    # Total SPAM
-
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM predictions
-        WHERE classification = 'SPAM'
-    """)
-
-    spam = cursor.fetchone()[0]
-
-
-    # Total HAM
-
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM predictions
-        WHERE classification = 'HAM'
-    """)
-
-    ham = cursor.fetchone()[0]
-
-
-    # Average spam probability
-
-    cursor.execute("""
-        SELECT AVG(probability)
-        FROM predictions
-    """)
-
-    average_probability = cursor.fetchone()[0]
-
-
-    connection.close()
-
-
-    if average_probability is None:
-
-        average_probability = 0
-
-    else:
-
-        average_probability = round(
-            average_probability,
-            2
-        )
-
+        cursor.execute("SELECT AVG(probability) FROM predictions")
+        avg = cursor.fetchone()[0]
+        average_probability = round(avg, 2) if avg is not None else 0
+        connection.close()
+    except Exception as e:
+        print("Database stats note:", e)
 
     return jsonify({
-
         "total": total,
-
         "spam": spam,
-
         "ham": ham,
-
         "average_probability": average_probability
-
     })
 
 
-# --------------------------------------------------
-# CLEAR HISTORY
-# --------------------------------------------------
-
-@app.route("/clear-history", methods=["DELETE"])
-@app.route("/api/clear-history", methods=["DELETE"])
+@app.route("/clear-history", methods=["DELETE", "OPTIONS"])
+@app.route("/api/clear-history", methods=["DELETE", "OPTIONS"])
 def clear_history():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
 
-    connection = sqlite3.connect(DATABASE)
+    try:
+        connection = sqlite3.connect(DATABASE)
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM predictions")
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        print("Database clear note:", e)
 
-    cursor = connection.cursor()
-
-    cursor.execute("""
-        DELETE FROM predictions
-    """)
-
-    connection.commit()
-    connection.close()
-
-    return jsonify({
-
-        "message":
-        "Prediction history cleared successfully."
-
-    })
+    return jsonify({"message": "Prediction history cleared successfully."})
 
 
-# --------------------------------------------------
-# RUN FLASK
-# --------------------------------------------------
+# Vercel catch-all router for rewritten requests targeting /api/index
+@app.route("/api/index", methods=["GET", "POST", "DELETE", "OPTIONS"])
+@app.route("/api/index/", methods=["GET", "POST", "DELETE", "OPTIONS"])
+def vercel_index_catchall():
+    target = request.headers.get("x-matched-path", "") or request.path
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+    if request.method == "POST" or "predict" in target:
+        return predict()
+    if request.method == "DELETE" or "clear-history" in target:
+        return clear_history()
+    if "stats" in target:
+        return stats()
+    if "history" in target:
+        return history()
+    return health()
+
 
 if __name__ == "__main__":
-
     app.run(debug=True)

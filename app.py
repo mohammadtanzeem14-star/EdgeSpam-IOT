@@ -1,13 +1,20 @@
+import os
+import sqlite3
+from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 import pandas as pd
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.linear_model import SGDClassifier
-import sqlite3
-from datetime import datetime
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DATABASE = "predictions.db"
+app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "Templates"))
+
+# In Vercel serverless environments, root is read-only; /tmp is writable
+if os.environ.get("VERCEL"):
+    DATABASE = "/tmp/predictions.db"
+else:
+    DATABASE = os.path.join(BASE_DIR, "predictions.db")
 
 
 # --------------------------------------------------
@@ -41,8 +48,10 @@ init_database()
 # LOAD DATASET
 # --------------------------------------------------
 
+DATASET_PATH = os.path.join(BASE_DIR, "SMSSpamCollection")
+
 df = pd.read_csv(
-    "SMSSpamCollection",
+    DATASET_PATH,
     sep="\t",
     names=["label", "text"]
 )

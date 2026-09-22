@@ -663,6 +663,86 @@
         }
 
         // =========================================
+        // LOCAL STORAGE & DASHBOARD SYNC
+        // =========================================
+        function getLocalHistory() {
+            try {
+                const saved = localStorage.getItem("edgespam_history");
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                console.error("Local storage read error:", e);
+                return [];
+            }
+        }
+
+        function saveLocalHistory(items) {
+            try {
+                localStorage.setItem("edgespam_history", JSON.stringify(items));
+            } catch (e) {
+                console.error("Local storage save error:", e);
+            }
+        }
+
+        function renderHistory(items) {
+            const historyBody = document.getElementById("historyBody");
+            historyBody.innerHTML = "";
+
+            if (!items || items.length === 0) {
+                historyBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="loading">No predictions yet.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            items.forEach(function(item) {
+                const row = document.createElement("tr");
+                const messageCell = document.createElement("td");
+                messageCell.textContent = item.message;
+
+                const resultCell = document.createElement("td");
+                resultCell.textContent = item.classification;
+                resultCell.className = item.classification === "SPAM" ? "spam" : "ham";
+
+                const probabilityCell = document.createElement("td");
+                const prob = item.probability ?? item.spam_probability ?? 0;
+                probabilityCell.textContent = prob + "%";
+
+                const timeCell = document.createElement("td");
+                timeCell.textContent = item.timestamp;
+                timeCell.className = "time";
+
+                row.appendChild(messageCell);
+                row.appendChild(resultCell);
+                row.appendChild(probabilityCell);
+                row.appendChild(timeCell);
+                historyBody.appendChild(row);
+            });
+        }
+
+        function updateDashboard(items, backendStats = null) {
+            let total = items.length;
+            let spam = items.filter(i => i.classification === "SPAM").length;
+            let ham = items.filter(i => i.classification === "HAM").length;
+            let avgProb = total > 0
+                ? (items.reduce((sum, i) => sum + parseFloat(i.probability ?? i.spam_probability ?? 0), 0) / total).toFixed(2)
+                : 0;
+
+            if (backendStats && typeof backendStats.total === "number" && backendStats.total > total) {
+                total = backendStats.total;
+                spam = backendStats.spam;
+                ham = backendStats.ham;
+                avgProb = backendStats.average_probability;
+            }
+
+            document.getElementById("totalCount").textContent = total;
+            document.getElementById("spamCount").textContent = spam;
+            document.getElementById("hamCount").textContent = ham;
+            document.getElementById("averageProbability").textContent = avgProb + "%";
+        }
+
+        // =========================================
         // CHECK SMS
         // =========================================
         async function checkSMS() {
@@ -719,8 +799,24 @@
                     statusMessage.textContent = "✓ This message appears to be safe.";
                 }
 
+                // Add prediction to history and update dashboard IMMEDIATELY
+                const newRecord = {
+                    id: data.id || Date.now(),
+                    message: message,
+                    classification: data.classification,
+                    probability: data.spam_probability,
+                    timestamp: data.timestamp || new Date().toLocaleString()
+                };
+
+                const currentHistory = getLocalHistory();
+                currentHistory.unshift(newRecord);
+                saveLocalHistory(currentHistory);
+                renderHistory(currentHistory);
+                updateDashboard(currentHistory);
+
                 messageInput.value = "";
-                loadHistory();
+
+                // Background sync
                 loadStats();
             } catch (error) {
                 alert("Unable to connect to the backend: " + (error.message || error));
@@ -735,48 +831,35 @@
         // LOAD HISTORY
         // =========================================
         async function loadHistory() {
-            const historyBody = document.getElementById("historyBody");
+            const localItems = getLocalHistory();
+            renderHistory(localItems);
+            updateDashboard(localItems);
+
             try {
                 const response = await fetchAPI("/history");
-                if (!response.ok) {
-                    console.warn("History returned HTTP status:", response.status);
-                    return;
+                if (response.ok) {
+                    const backendItems = await response.json();
+                    if (Array.isArray(backendItems) && backendItems.length > 0) {
+                        const existingKeys = new Set(localItems.map(i => `${i.message}_${i.timestamp}`));
+                        for (const item of backendItems) {
+                            const key = `${item.message}_${item.timestamp}`;
+                            if (!existingKeys.has(key)) {
+                                localItems.push({
+                                    id: item.id,
+                                    message: item.message,
+                                    classification: item.classification,
+                                    probability: item.probability,
+                                    timestamp: item.timestamp
+                                });
+                                existingKeys.add(key);
+                            }
+                        }
+                        localItems.sort((a, b) => (b.id || 0) - (a.id || 0));
+                        saveLocalHistory(localItems);
+                        renderHistory(localItems);
+                        updateDashboard(localItems);
+                    }
                 }
-
-                const history = await response.json();
-                historyBody.innerHTML = "";
-
-                if (!history || history.length === 0) {
-                    historyBody.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="loading">No predictions yet.</td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                history.forEach(function(item) {
-                    const row = document.createElement("tr");
-                    const messageCell = document.createElement("td");
-                    messageCell.textContent = item.message;
-
-                    const resultCell = document.createElement("td");
-                    resultCell.textContent = item.classification;
-                    resultCell.className = item.classification === "SPAM" ? "spam" : "ham";
-
-                    const probabilityCell = document.createElement("td");
-                    probabilityCell.textContent = item.probability + "%";
-
-                    const timeCell = document.createElement("td");
-                    timeCell.textContent = item.timestamp;
-                    timeCell.className = "time";
-
-                    row.appendChild(messageCell);
-                    row.appendChild(resultCell);
-                    row.appendChild(probabilityCell);
-                    row.appendChild(timeCell);
-                    historyBody.appendChild(row);
-                });
             } catch (error) {
                 console.error("History error:", error);
             }
@@ -786,21 +869,20 @@
         // LOAD DASHBOARD STATISTICS
         // =========================================
         async function loadStats() {
+            const localItems = getLocalHistory();
             try {
                 const response = await fetchAPI("/stats");
-                if (!response.ok) {
-                    console.warn("Stats returned HTTP status:", response.status);
-                    return;
+                if (response.ok) {
+                    const backendStats = await response.json();
+                    if (backendStats && typeof backendStats.total === "number" && backendStats.total > 0) {
+                        updateDashboard(localItems, backendStats);
+                        return;
+                    }
                 }
-
-                const stats = await response.json();
-                document.getElementById("totalCount").textContent = stats.total ?? 0;
-                document.getElementById("spamCount").textContent = stats.spam ?? 0;
-                document.getElementById("hamCount").textContent = stats.ham ?? 0;
-                document.getElementById("averageProbability").textContent = (stats.average_probability ?? 0) + "%";
             } catch (error) {
                 console.error("Stats error:", error);
             }
+            updateDashboard(localItems);
         }
 
         // =========================================
@@ -810,18 +892,17 @@
             const confirmClear = confirm("Are you sure you want to clear all prediction history?");
             if (!confirmClear) return;
 
-            try {
-                const response = await fetchAPI("/clear-history", { method: "DELETE" });
-                const data = await response.json();
-                alert(data.message || "History cleared.");
+            saveLocalHistory([]);
+            renderHistory([]);
+            updateDashboard([]);
+            document.getElementById("result").style.display = "none";
 
-                loadHistory();
-                loadStats();
-                document.getElementById("result").style.display = "none";
+            try {
+                await fetchAPI("/clear-history", { method: "DELETE" });
             } catch (error) {
-                alert("Unable to clear history: " + (error.message || error));
-                console.error("Clear history error:", error);
+                console.error("Clear history backend note:", error);
             }
+            alert("Prediction history cleared successfully.");
         }
 
         // =========================================

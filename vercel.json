@@ -24,12 +24,17 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/predict", "destination": "/api/index" },
-    { "source": "/history", "destination": "/api/index" },
-    { "source": "/stats", "destination": "/api/index" },
-    { "source": "/clear-history", "destination": "/api/index" },
-    { "source": "/health", "destination": "/api/index" },
+    { "source": "/api/predict", "destination": "/api/index?action=predict" },
+    { "source": "/api/history", "destination": "/api/index?action=history" },
+    { "source": "/api/stats", "destination": "/api/index?action=stats" },
+    { "source": "/api/clear-history", "destination": "/api/index?action=clear-history" },
+    { "source": "/api/health", "destination": "/api/index?action=health" },
+    { "source": "/predict", "destination": "/api/index?action=predict" },
+    { "source": "/history", "destination": "/api/index?action=history" },
+    { "source": "/stats", "destination": "/api/index?action=stats" },
+    { "source": "/clear-history", "destination": "/api/index?action=clear-history" },
+    { "source": "/health", "destination": "/api/index?action=health" },
+    { "source": "/api/(.*)", "destination": "/api/index?action=$1" },
     { "source": "/(.*)", "destination": "/api/index" }
   ]
 }

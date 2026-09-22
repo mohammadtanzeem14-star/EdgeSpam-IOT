@@ -161,6 +161,7 @@ def predict():
     probability = round(probability, 2)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    last_id = int(datetime.now().timestamp() * 1000)
     try:
         connection = sqlite3.connect(DATABASE)
         cursor = connection.cursor()
@@ -169,12 +170,15 @@ def predict():
             (message, classification, probability, timestamp)
             VALUES (?, ?, ?, ?)
         """, (message, classification, probability, timestamp))
+        if cursor.lastrowid:
+            last_id = cursor.lastrowid
         connection.commit()
         connection.close()
     except Exception as e:
         print("Database save note:", e)
 
     return jsonify({
+        "id": last_id,
         "message": message,
         "classification": classification,
         "spam_probability": probability,
@@ -273,18 +277,25 @@ def clear_history():
 @app.route("/api/index", methods=["GET", "POST", "DELETE", "OPTIONS"])
 @app.route("/api/index/", methods=["GET", "POST", "DELETE", "OPTIONS"])
 def vercel_index_catchall():
-    target = request.headers.get("x-matched-path", "") or request.path
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"})
-    if request.method == "POST" or "predict" in target:
+
+    action = request.args.get("action", "").strip().lower()
+    target = (request.headers.get("x-matched-path", "") or request.path).lower()
+
+    if action == "predict" or "predict" in target or request.method == "POST":
         return predict()
-    if request.method == "DELETE" or "clear-history" in target:
+    elif action == "clear-history" or "clear-history" in target or request.method == "DELETE":
         return clear_history()
-    if "stats" in target:
-        return stats()
-    if "history" in target:
+    elif action == "history" or "history" in target or "hist" in target:
         return history()
-    return health()
+    elif action == "stats" or "stats" in target:
+        return stats()
+    elif action == "health" or "health" in target:
+        return health()
+
+    # Default fallback for GET
+    return stats()
 
 
 if __name__ == "__main__":

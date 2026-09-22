@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EdgeSpam-IoT</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(135deg, #0f172a, #1e293b);
+
+            padding: 30px 20px;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: auto;
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.3);
+
+        }
+
+
+        h1 {
+
+            text-align: center;
+
+            color: #0f172a;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #64748b;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        /* DASHBOARD */
+
+        .dashboard {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .card {
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 14px;
+
+            padding: 18px 10px;
+
+            text-align: center;
+
+        }
+
+
+        .card-title {
+
+            font-size: 13px;
+
+            color: #64748b;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .card-value {
+
+            font-size: 27px;
+
+            font-weight: bold;
+
+            color: #0f172a;
+
+        }
+
+
+        .spam-card .card-value {
+
+            color: #dc2626;
+
+        }
+
+
+        .ham-card .card-value {
+
+            color: #16a34a;
+
+        }
+
+
+        .average-card .card-value {
+
+            color: #2563eb;
+
+        }
+
+
+        label {
+
+            display: block;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+            color: #334155;
+
+        }
+
+
+        textarea {
+
+            width: 100%;
+
+            height: 150px;
+
+            resize: none;
+
+            border: 2px solid #cbd5e1;
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            font-size: 16px;
+
+            outline: none;
+
+        }
+
+
+        textarea:focus {
+
+            border-color: #2563eb;
+
+        }
+
+
+        button {
+
+            width: 100%;
+
+            margin-top: 18px;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #1d4ed8;
+
+        }
+
+
+        button:disabled {
+
+            background: #94a3b8;
+
+            cursor: not-allowed;
+
+        }
+
+
+        #result {
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: #f1f5f9;
+
+            display: none;
+
+            text-align: center;
+
+        }
+
+
+        #classification {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        #probability {
+
+            font-size: 18px;
+
+            color: #475569;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        #status-message {
+
+            font-size: 15px;
+
+            color: #64748b;
+
+        }
+
+
+        .history-title {
+
+            margin-top: 35px;
+
+            margin-bottom: 15px;
+
+            color: #0f172a;
+
+        }
+
+
+        .history {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 14px;
+
+        }
+
+
+        th {
+
+            background: #0f172a;
+
+            color: white;
+
+            padding: 12px;
+
+            text-align: left;
+
+        }
+
+
+        td {
+
+            padding: 12px;
+
+            border-bottom: 1px solid #e2e8f0;
+
+            vertical-align: top;
+
+        }
+
+
+        .spam {
+
+            color: #dc2626;
+
+            font-weight: bold;
+
+        }
+
+
+        .ham {
+
+            color: #16a34a;
+
+            font-weight: bold;
+
+        }
+
+
+        .time {
+
+            color: #64748b;
+
+            white-space: nowrap;
+
+        }
+
+
+        .clear-button {
+
+            background: #64748b;
+
+            margin-top: 15px;
+
+        }
+
+
+        .clear-button:hover {
+
+            background: #475569;
+
+        }
+
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+        }
+
+
+        .loading {
+
+            text-align: center;
+
+            color: #64748b;
+
+            padding: 15px;
+
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            .dashboard {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .dashboard {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <h1>EdgeSpam-IoT</h1>
+
+
+        <p class="subtitle">
+
+            AI-Based SMS Spam Detection
+
+        </p>
+
+
+        <!-- DASHBOARD -->
+
+        <div class="dashboard">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Predictions
+                </div>
+
+                <div
+                    class="card-value"
+                    id="totalCount">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="card spam-card">
+
+                <div class="card-title">
+                    SPAM Messages
+                </div>
+
+                <div
+                    class="card-value"
+                    id="spamCount">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="card ham-card">
+
+                <div class="card-title">
+                    HAM Messages
+                </div>
+
+                <div
+                    class="card-value"
+                    id="hamCount">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="card average-card">
+
+                <div class="card-title">
+                    Avg. Spam Probability
+                </div>
+
+                <div
+                    class="card-value"
+                    id="averageProbability">
+
+                    0%
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SMS INPUT -->
+
+        <label for="message">
+
+            Enter SMS Message
+
+        </label>
+
+
+        <textarea
+            id="message"
+            placeholder="Example: Congratulations! You have won a prize..."></textarea>
+
+
+        <button
+            id="checkButton"
+            onclick="checkSMS()">
+
+            Check SMS
+
+        </button>
+
+
+        <!-- RESULT -->
+
+        <div id="result">
+
+            <div id="classification"></div>
+
+            <div id="probability"></div>
+
+            <div id="status-message"></div>
+
+        </div>
+
+
+        <!-- HISTORY -->
+
+        <h2 class="history-title">
+
+            Prediction History
+
+        </h2>
+
+
+        <div class="history">
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>SMS</th>
+
+                        <th>Result</th>
+
+                        <th>Probability</th>
+
+                        <th>Date & Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="historyBody">
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="loading">
+
+                            Loading history...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+        </div>
+
+
+        <button
+            class="clear-button"
+            onclick="clearHistory()">
+
+            Clear History
+
+        </button>
+
+
+        <div class="footer">
+
+            Powered by Machine Learning
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+
+
+        // =========================================
+        // CHECK SMS
+        // =========================================
+
+        async function checkSMS() {
+
+
+            const message =
+
+                document
+                    .getElementById("message")
+                    .value
+                    .trim();
+
+
+            if (message === "") {
+
+                alert(
+                    "Please enter an SMS message."
+                );
+
+                return;
+
+            }
+
+
+            const button =
+
+                document
+                    .getElementById(
+                        "checkButton"
+                    );
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Checking...";
+
+
+            try {
+
+
+                const response =
+
+                    await fetch(
+                        "/predict",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body: JSON.stringify({
+
+                                message:
+                                    message
+
+                            })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.error ||
+                        "Prediction failed."
+                    );
+
+                    return;
+
+                }
+
+
+                const result =
+
+                    document
+                        .getElementById(
+                            "result"
+                        );
+
+
+                const classification =
+
+                    document
+                        .getElementById(
+                            "classification"
+                        );
+
+
+                const probability =
+
+                    document
+                        .getElementById(
+                            "probability"
+                        );
+
+
+                const statusMessage =
+
+                    document
+                        .getElementById(
+                            "status-message"
+                        );
+
+
+                result.style.display =
+                    "block";
+
+
+                classification.textContent =
+                    data.classification;
+
+
+                probability.textContent =
+
+                    "Spam Probability: "
+                    + data.spam_probability
+                    + "%";
+
+
+                if (
+                    data.classification
+                    === "SPAM"
+                ) {
+
+
+                    classification.style.color =
+                        "#dc2626";
+
+
+                    statusMessage.textContent =
+                        "⚠️ This message may be harmful or unwanted.";
+
+                }
+
+                else {
+
+
+                    classification.style.color =
+                        "#16a34a";
+
+
+                    statusMessage.textContent =
+                        "✓ This message appears to be safe.";
+
+                }
+
+
+                document
+                    .getElementById("message")
+                    .value = "";
+
+
+                // Update history
+
+                loadHistory();
+
+
+                // Update dashboard
+
+                loadStats();
+
+
+            }
+
+
+            catch (error) {
+
+
+                alert(
+                    "Unable to connect to the backend."
+                );
+
+
+                console.error(error);
+
+            }
+
+
+            finally {
+
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "Check SMS";
+
+            }
+
+        }
+
+
+        // =========================================
+        // LOAD HISTORY
+        // =========================================
+
+        async function loadHistory() {
+
+
+            const historyBody =
+
+                document
+                    .getElementById(
+                        "historyBody"
+                    );
+
+
+            try {
+
+
+                const response =
+
+                    await fetch(
+                        "/history"
+                    );
+
+
+                const history =
+                    await response.json();
+
+
+                historyBody.innerHTML =
+                    "";
+
+
+                if (
+                    history.length === 0
+                ) {
+
+
+                    historyBody.innerHTML = `
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="loading">
+
+                                No predictions yet.
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+
+                    return;
+
+                }
+
+
+                history.forEach(
+                    function(item) {
+
+
+                        const row =
+                            document
+                                .createElement(
+                                    "tr"
+                                );
+
+
+                        const messageCell =
+                            document
+                                .createElement(
+                                    "td"
+                                );
+
+
+                        messageCell.textContent =
+                            item.message;
+
+
+                        const resultCell =
+                            document
+                                .createElement(
+                                    "td"
+                                );
+
+
+                        resultCell.textContent =
+                            item.classification;
+
+
+                        if (
+                            item.classification
+                            === "SPAM"
+                        ) {
+
+                            resultCell.className =
+                                "spam";
+
+                        }
+
+                        else {
+
+                            resultCell.className =
+                                "ham";
+
+                        }
+
+
+                        const probabilityCell =
+                            document
+                                .createElement(
+                                    "td"
+                                );
+
+
+                        probabilityCell.textContent =
+                            item.probability
+                            + "%";
+
+
+                        const timeCell =
+                            document
+                                .createElement(
+                                    "td"
+                                );
+
+
+                        timeCell.textContent =
+                            item.timestamp;
+
+
+                        timeCell.className =
+                            "time";
+
+
+                        row.appendChild(
+                            messageCell
+                        );
+
+
+                        row.appendChild(
+                            resultCell
+                        );
+
+
+                        row.appendChild(
+                            probabilityCell
+                        );
+
+
+                        row.appendChild(
+                            timeCell
+                        );
+
+
+                        historyBody.appendChild(
+                            row
+                        );
+
+                    }
+                );
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "History error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // LOAD DASHBOARD STATISTICS
+        // =========================================
+
+        async function loadStats() {
+
+
+            try {
+
+
+                const response =
+
+                    await fetch(
+                        "/stats"
+                    );
+
+
+                const stats =
+                    await response.json();
+
+
+                document
+                    .getElementById(
+                        "totalCount"
+                    )
+                    .textContent =
+                    stats.total;
+
+
+                document
+                    .getElementById(
+                        "spamCount"
+                    )
+                    .textContent =
+                    stats.spam;
+
+
+                document
+                    .getElementById(
+                        "hamCount"
+                    )
+                    .textContent =
+                    stats.ham;
+
+
+                document
+                    .getElementById(
+                        "averageProbability"
+                    )
+                    .textContent =
+                    stats.average_probability
+                    + "%";
+
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Stats error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // CLEAR HISTORY
+        // =========================================
+
+        async function clearHistory() {
+
+
+            const confirmClear =
+
+                confirm(
+                    "Are you sure you want to clear all prediction history?"
+                );
+
+
+            if (!confirmClear) {
+
+                return;
+
+            }
+
+
+            try {
+
+
+                const response =
+
+                    await fetch(
+                        "/clear-history",
+                        {
+
+                            method: "DELETE"
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                alert(data.message);
+
+
+                loadHistory();
+
+                loadStats();
+
+
+                document
+                    .getElementById(
+                        "result"
+                    )
+                    .style.display =
+                    "none";
+
+
+            }
+
+
+            catch (error) {
+
+                alert(
+                    "Unable to clear history."
+                );
+
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        // =========================================
+        // PAGE LOAD
+        // =========================================
+
+        window.onload = function() {
+
+            loadHistory();
+
+            loadStats();
+
+        };
+
+
+    </script>
+
+
+</body>
+
+</html>

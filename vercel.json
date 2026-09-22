@@ -1,8 +1,28 @@
 {
   "rewrites": [
     {
+      "source": "/predict",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/history",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/stats",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/clear-history",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/api/index"
     }
   ]
 }

@@ -8,7 +8,11 @@ from sklearn.linear_model import SGDClassifier
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "Templates"))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "Templates"),
+    static_folder=os.path.join(BASE_DIR, "public")
+)
 
 # In Vercel serverless environments, root is read-only; /tmp is writable
 if os.environ.get("VERCEL"):
@@ -100,6 +104,8 @@ print("Database initialized successfully!")
 # --------------------------------------------------
 
 @app.route("/")
+@app.route("/api")
+@app.route("/api/")
 def home():
 
     return render_template("index.html")
@@ -110,6 +116,7 @@ def home():
 # --------------------------------------------------
 
 @app.route("/predict", methods=["POST"])
+@app.route("/api/predict", methods=["POST"])
 def predict():
 
     data = request.get_json()
@@ -188,6 +195,7 @@ def predict():
 # --------------------------------------------------
 
 @app.route("/history", methods=["GET"])
+@app.route("/api/history", methods=["GET"])
 def history():
 
     connection = sqlite3.connect(DATABASE)
@@ -230,6 +238,7 @@ def history():
 # --------------------------------------------------
 
 @app.route("/stats", methods=["GET"])
+@app.route("/api/stats", methods=["GET"])
 def stats():
 
     connection = sqlite3.connect(DATABASE)
@@ -312,6 +321,7 @@ def stats():
 # --------------------------------------------------
 
 @app.route("/clear-history", methods=["DELETE"])
+@app.route("/api/clear-history", methods=["DELETE"])
 def clear_history():
 
     connection = sqlite3.connect(DATABASE)

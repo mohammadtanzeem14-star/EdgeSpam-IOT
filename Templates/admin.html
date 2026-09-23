@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdgeSpam-IoT | Admin Sign In</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 30px 20px;
+            color: #334155;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .login-card h1 {
+            color: #0f172a;
+            font-size: 26px;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+
+        .login-card .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #0f172a;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .login-error {
+            display: none;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            margin-top: 6px;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:active {
+            transform: scale(0.99);
+        }
+
+        .demo-credentials {
+            margin-top: 25px;
+            padding: 12px 14px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .demo-credentials strong {
+            color: #0f172a;
+        }
+
+        .back-nav {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 14px;
+            }
+            .login-card {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+            .login-card h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <span class="brand-badge">EdgeSpam-IoT • Admin Portal</span>
+        <h1>Administrator Sign In</h1>
+        <p class="subtitle">Access the SMS spam monitoring & management console</p>
+
+        <div id="loginError" class="login-error">
+            Invalid username or password.
+        </div>
+
+        <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input
+                    type="text"
+                    id="loginUsername"
+                    class="form-control"
+                    placeholder="Enter username"
+                    autocomplete="username"
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    class="form-control"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                />
+            </div>
+
+            <button type="submit" id="loginBtn" class="login-btn">
+                Sign In
+            </button>
+        </form>
+
+        <div class="demo-credentials">
+            Demo Credentials: Username: <strong>admin</strong> | Password: <strong>admin123</strong>
+        </div>
+
+        <div class="back-nav">
+            <a href="/" class="back-link">
+                &larr; Back to User Portal
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const DEMO_USER = "admin";
+        const DEMO_PASS = "admin123";
+
+        // If already authenticated, redirect straight to dashboard
+        if (sessionStorage.getItem("edgespam_auth") === "true") {
+            window.location.replace("/admin/dashboard");
+        }
+
+        function handleLogin() {
+            const usernameInput = document.getElementById("loginUsername");
+            const passwordInput = document.getElementById("loginPassword");
+            const errorDiv = document.getElementById("loginError");
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (username === DEMO_USER && password === DEMO_PASS) {
+                sessionStorage.setItem("edgespam_auth", "true");
+                sessionStorage.setItem("edgespam_user", username);
+                errorDiv.style.display = "none";
+                window.location.href = "/admin/dashboard";
+            } else {
+                errorDiv.style.display = "block";
+                passwordInput.value = "";
+                passwordInput.focus();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

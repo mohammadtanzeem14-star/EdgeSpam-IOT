@@ -133,6 +133,18 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/admin")
+@app.route("/admin/")
+def admin_login():
+    return render_template("admin.html")
+
+
+@app.route("/admin/dashboard")
+@app.route("/admin/dashboard/")
+def admin_dashboard():
+    return render_template("dashboard.html")
+
+
 @app.route("/health", methods=["GET"])
 @app.route("/api/health", methods=["GET"])
 def health():
@@ -293,6 +305,12 @@ def vercel_index_catchall():
         return stats()
     elif action == "health" or "health" in target:
         return health()
+    elif action == "dashboard" or "admin/dashboard" in target:
+        return render_template("dashboard.html")
+    elif action == "admin" or "admin" in target:
+        return render_template("admin.html")
+    elif target in ["/", "", "/api", "/api/"]:
+        return render_template("index.html")
 
     # Default fallback for GET
     return stats()

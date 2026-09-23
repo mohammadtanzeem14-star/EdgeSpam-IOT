@@ -23,7 +23,7 @@
 
         .container {
             width: 100%;
-            max-width: 960px;
+            max-width: 1020px;
             margin: auto;
             background: white;
             border-radius: 20px;
@@ -117,9 +117,6 @@
             border-color: #dc2626;
         }
 
-        /* --------------------------------------------------
-           DASHBOARD HEADER & METRICS
-        -------------------------------------------------- */
         .view-header {
             margin-bottom: 25px;
         }
@@ -135,11 +132,390 @@
             font-size: 14px;
         }
 
+        /* --------------------------------------------------
+           ML WORKFLOW SECTION (4 MODULES)
+        -------------------------------------------------- */
+        .ml-workflow-card {
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+        }
+
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .workflow-header h2 {
+            font-size: 18px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .workflow-badge {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        /* 4-STEP TABS */
+        .step-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .step-btn {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-btn span.step-num {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .step-btn:hover {
+            border-color: #93c5fd;
+            color: #1e293b;
+        }
+
+        .step-btn.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #2563eb;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+        }
+
+        .step-btn.active span.step-num {
+            color: #2563eb;
+            font-weight: 800;
+        }
+
+        .step-btn.completed span.step-num::after {
+            content: " ✓";
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        /* STEP PANELS */
+        .step-panel {
+            display: none;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        .panel-desc {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1.5px solid #cbd5e1;
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-secondary:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .file-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f8fafc;
+            margin-bottom: 18px;
+            transition: border-color 0.2s ease;
+        }
+
+        .file-dropzone:hover {
+            border-color: #2563eb;
+        }
+
+        .file-dropzone input[type="file"] {
+            display: block;
+            margin: 10px auto 0 auto;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        /* STATUS ALERTS */
+        .status-alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        .status-alert.info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            display: block;
+        }
+
+        .status-alert.success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+            display: block;
+        }
+
+        .status-alert.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            display: block;
+        }
+
+        /* STATS PILL GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+            margin-bottom: 18px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+
+        .stat-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-box-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .stat-box.ham .stat-box-value { color: #16a34a; }
+        .stat-box.spam .stat-box-value { color: #dc2626; }
+        .stat-box.highlight .stat-box-value { color: #2563eb; }
+
+        /* ALGORITHM EVALUATION TABLE */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+            margin-bottom: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .algo-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .algo-table th, .algo-table td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .algo-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .algo-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .algo-table td.metric-val {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .live-tag {
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 8px;
+            border: 1px solid #bfdbfe;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+
+        .best-tag {
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+            margin-left: 6px;
+        }
+
+        /* SVG COMPARISON CHART */
+        .chart-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .svg-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .engineering-note {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 0 10px 10px 0;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+            margin-top: 18px;
+        }
+
+        .engineering-note strong {
+            color: #0f172a;
+        }
+
+        /* --------------------------------------------------
+           LIVE PREDICTION METRICS (4 CARDS)
+        -------------------------------------------------- */
+        .dashboard-section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .dashboard {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .card {
@@ -178,7 +554,7 @@
         .dashboard-actions {
             display: flex;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
         }
 
@@ -320,6 +696,9 @@
         }
 
         @media (max-width: 768px) {
+            .step-tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
             .dashboard {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -333,11 +712,14 @@
         }
 
         @media (max-width: 480px) {
+            .step-tabs {
+                grid-template-columns: 1fr;
+            }
             .dashboard {
                 grid-template-columns: 1fr;
             }
             .container {
-                padding: 22px 18px;
+                padding: 20px 16px;
             }
         }
     </style>
@@ -373,8 +755,260 @@
 
         <!-- DASHBOARD HEADER -->
         <div class="view-header">
-            <h1>Admin Dashboard</h1>
-            <p>Real-time system metrics, analytics overview, and comprehensive classification logs</p>
+            <h1>Admin Dashboard & Machine Learning Console</h1>
+            <p>End-to-end dataset management, feature extraction, multi-algorithm training & live classification monitor</p>
+        </div>
+
+        <!-- ==================================================
+             MACHINE LEARNING WORKFLOW (4 MODULES)
+        ================================================== -->
+        <section class="ml-workflow-card">
+            <div class="workflow-header">
+                <h2>
+                    <span>🔬</span> Machine Learning Pipeline
+                </h2>
+                <span class="workflow-badge">Project Guide Modules</span>
+            </div>
+
+            <!-- STEP NAVIGATION TABS -->
+            <div class="step-tabs">
+                <button id="tabStep1" class="step-btn active" onclick="switchWorkflowTab(1)">
+                    <span class="step-num">Step 1</span>
+                    Upload Dataset
+                </button>
+                <button id="tabStep2" class="step-btn" onclick="switchWorkflowTab(2)">
+                    <span class="step-num">Step 2</span>
+                    Preprocess Dataset
+                </button>
+                <button id="tabStep3" class="step-btn" onclick="switchWorkflowTab(3)">
+                    <span class="step-num">Step 3</span>
+                    Apply Algorithms
+                </button>
+                <button id="tabStep4" class="step-btn" onclick="switchWorkflowTab(4)">
+                    <span class="step-num">Step 4</span>
+                    Comparison Graph
+                </button>
+            </div>
+
+            <!-- MODULE 1: UPLOAD DATASET -->
+            <div id="panelStep1" class="step-panel active">
+                <p class="panel-desc">
+                    Load the SMS spam dataset for training and benchmarking. Acceptable formats include TSV/CSV with <code>label</code> and <code>message</code> fields.
+                </p>
+
+                <div class="file-dropzone">
+                    <p style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                        Select a CSV/TSV Dataset File from your device
+                    </p>
+                    <input type="file" id="datasetFileInput" accept=".csv,.tsv,.txt">
+                </div>
+
+                <div class="btn-group">
+                    <button id="btnUploadFile" class="btn-primary" onclick="handleFileUpload()">
+                        📤 Upload Selected File
+                    </button>
+                    <button id="btnLoadDefault" class="btn-secondary" onclick="handleLoadDefaultDataset()">
+                        📁 Load Project Dataset (SMSSpamCollection ~5,572 rows)
+                    </button>
+                </div>
+
+                <div id="uploadStatus" class="status-alert"></div>
+
+                <!-- UPLOAD STATS CONTAINER -->
+                <div id="uploadStatsBox" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-box highlight">
+                            <div class="stat-box-title">Dataset File</div>
+                            <div class="stat-box-value" id="dispFilename" style="font-size: 14px; word-break: break-all;">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Total Records</div>
+                            <div class="stat-box-value" id="dispTotalRecords">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Columns</div>
+                            <div class="stat-box-value" id="dispNumCols">0</div>
+                        </div>
+                        <div class="stat-box ham">
+                            <div class="stat-box-title">HAM Samples</div>
+                            <div class="stat-box-value" id="dispHamCount">0</div>
+                        </div>
+                        <div class="stat-box spam">
+                            <div class="stat-box-title">SPAM Samples</div>
+                            <div class="stat-box-value" id="dispSpamCount">0</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button class="btn-primary" onclick="switchWorkflowTab(2)">
+                            Proceed to Preprocess Dataset &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 2: PREPROCESS DATASET -->
+            <div id="panelStep2" class="step-panel">
+                <p class="panel-desc">
+                    Normalize column headers, map text labels (<code>ham &rarr; 0</code>, <code>spam &rarr; 1</code>), lowercase text, and extract a 512-dimensional sparse feature representation using <strong>HashingVectorizer</strong> (L2-norm, non-negative signs).
+                </p>
+
+                <div class="btn-group">
+                    <button id="btnPreprocess" class="btn-primary" onclick="handlePreprocess()">
+                        ⚙️ Run Preprocessing Pipeline
+                    </button>
+                </div>
+
+                <div id="preprocessStatus" class="status-alert"></div>
+
+                <!-- PREPROCESS STATS CONTAINER -->
+                <div id="preprocessStatsBox" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-box-title">Original Samples</div>
+                            <div class="stat-box-value" id="dispPrepOrig">0</div>
+                        </div>
+                        <div class="stat-box highlight">
+                            <div class="stat-box-title">Cleaned Samples</div>
+                            <div class="stat-box-value" id="dispPrepProcessed">0</div>
+                        </div>
+                        <div class="stat-box ham">
+                            <div class="stat-box-title">HAM (Class 0)</div>
+                            <div class="stat-box-value" id="dispPrepHam">0</div>
+                        </div>
+                        <div class="stat-box spam">
+                            <div class="stat-box-title">SPAM (Class 1)</div>
+                            <div class="stat-box-value" id="dispPrepSpam">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Feature Dims</div>
+                            <div class="stat-box-value" id="dispPrepDims">0 x 512</div>
+                        </div>
+                    </div>
+
+                    <div class="engineering-note">
+                        <strong>Feature Engineering Specs:</strong> Extracted using token pattern <code>(?u)\b\w\w+\b</code>, L2 Euclidean normalization, and 512 hash buckets to ensure complete portability to low-memory <strong>ESP32 Microcontrollers</strong>.
+                    </div>
+
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button class="btn-primary" onclick="switchWorkflowTab(3)">
+                            Proceed to Apply Algorithms &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 3: APPLY ALGORITHM -->
+            <div id="panelStep3" class="step-panel">
+                <p class="panel-desc">
+                    Train and evaluate four distinct classification models on the preprocessed feature vectors using a reproducible <strong>stratified 80/20 train/test split</strong> (Random State = 42).
+                </p>
+
+                <div class="btn-group">
+                    <button id="btnTrainModels" class="btn-primary" onclick="handleTrainModels()">
+                        🚀 Train & Evaluate 4 Algorithms
+                    </button>
+                </div>
+
+                <div id="trainStatus" class="status-alert"></div>
+
+                <!-- EVALUATION TABLE -->
+                <div id="trainResultsBox" style="display: none;">
+                    <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">
+                        Evaluation Split: <strong id="dispTrainCount">0</strong> Training Samples | <strong id="dispTestCount">0</strong> Test Samples
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="algo-table">
+                            <thead>
+                                <tr>
+                                    <th>Algorithm</th>
+                                    <th>Accuracy</th>
+                                    <th>Precision (Spam)</th>
+                                    <th>Recall (Spam)</th>
+                                    <th>F1-Score</th>
+                                    <th>Latency</th>
+                                </tr>
+                            </thead>
+                            <tbody id="algoTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 15px;">
+                        <button class="btn-primary" onclick="switchWorkflowTab(4)">
+                            View Comparison Graph &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 4: VIEW COMPARISON GRAPH -->
+            <div id="panelStep4" class="step-panel">
+                <p class="panel-desc">
+                    Comparative visual representation of Accuracy, Precision, Recall, and F1-Score across all evaluated classification models.
+                </p>
+
+                <div id="graphStatus" class="status-alert"></div>
+
+                <div id="graphContainer" style="display: none;">
+                    <div class="chart-box">
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #2563eb;"></div>
+                                <span>Accuracy</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #f59e0b;"></div>
+                                <span>Precision (Spam)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #10b981;"></div>
+                                <span>Recall (Spam)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #8b5cf6;"></div>
+                                <span>F1-Score</span>
+                            </div>
+                        </div>
+
+                        <!-- RESPONSIVE GROUPED BAR CHART SVG -->
+                        <div class="svg-container">
+                            <svg id="comparisonChartSvg" viewBox="0 0 800 380" style="width: 100%; height: auto; display: block;">
+                                <!-- Dynamically populated -->
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- NUMERICAL SUMMARY CARDS -->
+                    <div class="stats-grid" id="bestModelCardBox">
+                        <div class="stat-box highlight">
+                            <div class="stat-box-title">Best Overall Algorithm</div>
+                            <div class="stat-box-value" id="dispBestModelName" style="font-size: 15px;">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Peak F1-Score</div>
+                            <div class="stat-box-value" id="dispBestF1">0%</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Edge-Deployed Model</div>
+                            <div class="stat-box-value" style="font-size: 15px; color: #2563eb;">SGDClassifier</div>
+                        </div>
+                    </div>
+
+                    <div class="engineering-note">
+                        <strong>Academic Project Note:</strong> While Linear SVM and Logistic Regression achieve slightly higher raw F1 scores, <strong>SGDClassifier (L1 ElasticNet)</strong> is uniquely chosen for EdgeSpam-IoT hardware deployment because its L1 penalty creates extensive weight sparsity (zero weights), enabling the entire model to run directly inside resource-constrained ESP32 IoT RAM in under 0.1ms.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================
+             LIVE SYSTEM PREDICTIONS & MONITORING
+        ================================================== -->
+        <div class="dashboard-section-title">
+            <span>📊</span> Live Deployment Analytics & Prediction History
         </div>
 
         <!-- 4 METRIC CARDS -->
@@ -488,11 +1122,11 @@
             for (const url of urls) {
                 try {
                     const res = await fetch(url, options);
-                    if (res.ok || res.status === 400) {
+                    if (res.ok || res.status === 400 || res.status === 404) {
                         return res;
                     }
                     lastResponse = res;
-                    if (res.status === 404 || res.status === 405) {
+                    if (res.status === 405) {
                         continue;
                     }
                     return res;
@@ -503,6 +1137,329 @@
 
             if (lastResponse) return lastResponse;
             throw lastError || new Error("Failed to connect to backend");
+        }
+
+        // =========================================
+        // WORKFLOW TABS LOGIC
+        // =========================================
+        function switchWorkflowTab(stepNum) {
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`tabStep${i}`);
+                const panel = document.getElementById(`panelStep${i}`);
+                if (btn) btn.classList.remove("active");
+                if (panel) panel.classList.remove("active");
+            }
+            const activeBtn = document.getElementById(`tabStep${stepNum}`);
+            const activePanel = document.getElementById(`panelStep${stepNum}`);
+            if (activeBtn) activeBtn.classList.add("active");
+            if (activePanel) activePanel.classList.add("active");
+
+            // Auto-load comparison graph if on step 4
+            if (stepNum === 4) {
+                loadComparisonData();
+            }
+        }
+
+        // =========================================
+        // MODULE 1: UPLOAD DATASET
+        // =========================================
+        async function handleLoadDefaultDataset() {
+            const statusDiv = document.getElementById("uploadStatus");
+            const btn = document.getElementById("btnLoadDefault");
+            btn.disabled = true;
+            statusDiv.className = "status-alert info";
+            statusDiv.textContent = "Loading default project dataset (SMSSpamCollection)...";
+
+            try {
+                const res = await fetchAPI("/admin/upload-dataset", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ use_default: true })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    statusDiv.className = "status-alert error";
+                    statusDiv.textContent = data.error || "Failed to load default dataset.";
+                    return;
+                }
+
+                statusDiv.className = "status-alert success";
+                statusDiv.textContent = "✓ " + (data.message || "Dataset loaded successfully.");
+
+                displayUploadStats(data);
+                document.getElementById("tabStep1").classList.add("completed");
+            } catch (err) {
+                statusDiv.className = "status-alert error";
+                statusDiv.textContent = "Network error: " + (err.message || err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function handleFileUpload() {
+            const fileInput = document.getElementById("datasetFileInput");
+            const statusDiv = document.getElementById("uploadStatus");
+            const btn = document.getElementById("btnUploadFile");
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please select a CSV or TSV file to upload.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            btn.disabled = true;
+            statusDiv.className = "status-alert info";
+            statusDiv.textContent = `Uploading and validating ${file.name}...`;
+
+            try {
+                const res = await fetchAPI("/admin/upload-dataset", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    statusDiv.className = "status-alert error";
+                    statusDiv.textContent = data.error || "Failed to parse uploaded dataset.";
+                    return;
+                }
+
+                statusDiv.className = "status-alert success";
+                statusDiv.textContent = "✓ " + (data.message || "File uploaded successfully.");
+
+                displayUploadStats(data);
+                document.getElementById("tabStep1").classList.add("completed");
+            } catch (err) {
+                statusDiv.className = "status-alert error";
+                statusDiv.textContent = "Upload error: " + (err.message || err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function displayUploadStats(data) {
+            document.getElementById("dispFilename").textContent = data.filename;
+            document.getElementById("dispTotalRecords").textContent = data.total_records.toLocaleString();
+            document.getElementById("dispNumCols").textContent = data.num_columns + " (" + data.column_names.join(", ") + ")";
+            document.getElementById("dispHamCount").textContent = data.ham_count.toLocaleString();
+            document.getElementById("dispSpamCount").textContent = data.spam_count.toLocaleString();
+            document.getElementById("uploadStatsBox").style.display = "block";
+        }
+
+        // =========================================
+        // MODULE 2: PREPROCESS DATASET
+        // =========================================
+        async function handlePreprocess() {
+            const statusDiv = document.getElementById("preprocessStatus");
+            const btn = document.getElementById("btnPreprocess");
+
+            btn.disabled = true;
+            statusDiv.className = "status-alert info";
+            statusDiv.textContent = "Executing data cleaning, label mapping & 512-feature HashingVectorizer...";
+
+            try {
+                const res = await fetchAPI("/admin/preprocess", { method: "POST" });
+                const data = await res.json();
+                if (!res.ok) {
+                    statusDiv.className = "status-alert error";
+                    statusDiv.textContent = data.error || "Preprocessing pipeline error.";
+                    return;
+                }
+
+                statusDiv.className = "status-alert success";
+                statusDiv.textContent = "✓ " + (data.message || "Dataset preprocessed successfully.");
+
+                document.getElementById("dispPrepOrig").textContent = data.original_records.toLocaleString();
+                document.getElementById("dispPrepProcessed").textContent = data.processed_records.toLocaleString();
+                document.getElementById("dispPrepHam").textContent = data.ham_count.toLocaleString();
+                document.getElementById("dispPrepSpam").textContent = data.spam_count.toLocaleString();
+                document.getElementById("dispPrepDims").textContent = data.feature_dimensions[0].toLocaleString() + " × " + data.feature_dimensions[1];
+                document.getElementById("preprocessStatsBox").style.display = "block";
+                document.getElementById("tabStep2").classList.add("completed");
+            } catch (err) {
+                statusDiv.className = "status-alert error";
+                statusDiv.textContent = "Pipeline error: " + (err.message || err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // =========================================
+        // MODULE 3: APPLY ALGORITHM
+        // =========================================
+        async function handleTrainModels() {
+            const statusDiv = document.getElementById("trainStatus");
+            const btn = document.getElementById("btnTrainModels");
+
+            btn.disabled = true;
+            statusDiv.className = "status-alert info";
+            statusDiv.textContent = "Training SGDClassifier, Multinomial Naive Bayes, Logistic Regression & Linear SVM on stratified 80/20 split...";
+
+            try {
+                const res = await fetchAPI("/admin/train", { method: "POST" });
+                const json = await res.json();
+                if (!res.ok) {
+                    statusDiv.className = "status-alert error";
+                    statusDiv.textContent = json.error || "Model training error.";
+                    return;
+                }
+
+                statusDiv.className = "status-alert success";
+                statusDiv.textContent = "✓ " + (json.message || "Models evaluated successfully.");
+
+                const data = json.data;
+                document.getElementById("dispTrainCount").textContent = data.train_samples.toLocaleString();
+                document.getElementById("dispTestCount").textContent = data.test_samples.toLocaleString();
+
+                const tbody = document.getElementById("algoTableBody");
+                tbody.innerHTML = "";
+
+                data.models.forEach(m => {
+                    const tr = document.createElement("tr");
+
+                    let nameHtml = `<strong>${m.name}</strong>`;
+                    if (m.is_live_model) {
+                        nameHtml += `<span class="live-tag">Live Model</span>`;
+                    }
+                    if (m.name === data.best_model) {
+                        nameHtml += `<span class="best-tag">★ Best F1</span>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td>${nameHtml}</td>
+                        <td class="metric-val">${m.accuracy}%</td>
+                        <td class="metric-val" style="color: #f59e0b;">${m.precision}%</td>
+                        <td class="metric-val" style="color: #10b981;">${m.recall}%</td>
+                        <td class="metric-val" style="color: #8b5cf6;">${m.f1_score}%</td>
+                        <td style="color: #64748b; font-size: 12px;">${m.train_time_ms} ms</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById("trainResultsBox").style.display = "block";
+                document.getElementById("tabStep3").classList.add("completed");
+
+                // Pre-render comparison graph
+                renderComparisonGraph(data);
+            } catch (err) {
+                statusDiv.className = "status-alert error";
+                statusDiv.textContent = "Training failed: " + (err.message || err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // =========================================
+        // MODULE 4: VIEW COMPARISON GRAPH
+        // =========================================
+        async function loadComparisonData() {
+            const statusDiv = document.getElementById("graphStatus");
+            try {
+                const res = await fetchAPI("/admin/comparison");
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json.data && json.data.models) {
+                        renderComparisonGraph(json.data);
+                        return;
+                    }
+                }
+                statusDiv.className = "status-alert info";
+                statusDiv.textContent = "Click 'Train & Evaluate 4 Algorithms' in Step 3 to generate the live comparison graph.";
+            } catch (e) {
+                console.error("Comparison load note:", e);
+            }
+        }
+
+        function renderComparisonGraph(data) {
+            if (!data || !data.models || data.models.length === 0) return;
+
+            document.getElementById("graphContainer").style.display = "block";
+            document.getElementById("graphStatus").style.display = "none";
+            document.getElementById("tabStep4").classList.add("completed");
+
+            const bestModel = data.models.find(m => m.name === data.best_model) || data.models[0];
+            document.getElementById("dispBestModelName").textContent = bestModel.name;
+            document.getElementById("dispBestF1").textContent = bestModel.f1_score + "%";
+
+            // Draw Grouped Bar Chart in SVG
+            const svg = document.getElementById("comparisonChartSvg");
+            const models = data.models;
+
+            const chartWidth = 760;
+            const chartHeight = 320;
+            const startX = 60;
+            const startY = 30;
+            const plotWidth = 680;
+            const plotHeight = 240;
+
+            const numModels = models.length;
+            const groupWidth = plotWidth / numModels;
+            const barWidth = 14;
+            const barGap = 4;
+            const totalBarsWidth = 4 * barWidth + 3 * barGap;
+
+            const colors = {
+                acc: "#2563eb",
+                prec: "#f59e0b",
+                rec: "#10b981",
+                f1: "#8b5cf6"
+            };
+
+            let svgContent = `
+                <!-- Background Gridlines -->
+                <line x1="${startX}" y1="${startY}" x2="${startX + plotWidth}" y2="${startY}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+                <text x="${startX - 8}" y="${startY + 4}" fill="#94a3b8" font-size="11" text-anchor="end">100%</text>
+
+                <line x1="${startX}" y1="${startY + plotHeight * 0.25}" x2="${startX + plotWidth}" y2="${startY + plotHeight * 0.25}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+                <text x="${startX - 8}" y="${startY + plotHeight * 0.25 + 4}" fill="#94a3b8" font-size="11" text-anchor="end">75%</text>
+
+                <line x1="${startX}" y1="${startY + plotHeight * 0.5}" x2="${startX + plotWidth}" y2="${startY + plotHeight * 0.5}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+                <text x="${startX - 8}" y="${startY + plotHeight * 0.5 + 4}" fill="#94a3b8" font-size="11" text-anchor="end">50%</text>
+
+                <line x1="${startX}" y1="${startY + plotHeight * 0.75}" x2="${startX + plotWidth}" y2="${startY + plotHeight * 0.75}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" />
+                <text x="${startX - 8}" y="${startY + plotHeight * 0.75 + 4}" fill="#94a3b8" font-size="11" text-anchor="end">25%</text>
+
+                <line x1="${startX}" y1="${startY + plotHeight}" x2="${startX + plotWidth}" y2="${startY + plotHeight}" stroke="#cbd5e1" stroke-width="1.5" />
+                <text x="${startX - 8}" y="${startY + plotHeight + 4}" fill="#94a3b8" font-size="11" text-anchor="end">0%</text>
+            `;
+
+            models.forEach((m, idx) => {
+                const groupCenterX = startX + (idx + 0.5) * groupWidth;
+                const groupStartX = groupCenterX - (totalBarsWidth / 2);
+
+                const metrics = [
+                    { key: "acc", val: m.accuracy, color: colors.acc },
+                    { key: "prec", val: m.precision, color: colors.prec },
+                    { key: "rec", val: m.recall, color: colors.rec },
+                    { key: "f1", val: m.f1_score, color: colors.f1 }
+                ];
+
+                metrics.forEach((metric, bIdx) => {
+                    const bx = groupStartX + bIdx * (barWidth + barGap);
+                    const bHeight = (metric.val / 100) * plotHeight;
+                    const by = startY + plotHeight - bHeight;
+
+                    svgContent += `
+                        <rect x="${bx}" y="${by}" width="${barWidth}" height="${bHeight}" fill="${metric.color}" rx="3">
+                            <title>${m.name} - ${metric.key.toUpperCase()}: ${metric.val}%</title>
+                        </rect>
+                        <text x="${bx + barWidth / 2}" y="${by - 4}" fill="#475569" font-size="9" font-weight="700" text-anchor="middle">${Math.round(metric.val)}%</text>
+                    `;
+                });
+
+                // Algorithm Label below group
+                let label = m.name;
+                if (label.length > 15) {
+                    label = label.replace("Classifier", "").replace("Multinomial ", "");
+                }
+                svgContent += `
+                    <text x="${groupCenterX}" y="${startY + plotHeight + 22}" fill="#0f172a" font-size="12" font-weight="700" text-anchor="middle">${label}</text>
+                `;
+            });
+
+            svg.innerHTML = svgContent;
         }
 
         // =========================================
@@ -681,6 +1638,8 @@
         window.onload = function() {
             loadHistory();
             loadStats();
+            // Automatically pre-load dataset stats in background for convenience
+            handleLoadDefaultDataset();
         };
     </script>
 

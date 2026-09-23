@@ -1,10 +1,17 @@
 import os
+import io
+import time
 import sqlite3
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 import joblib
+import pandas as pd
 from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDClassifier, LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,6 +20,19 @@ app = Flask(
     template_folder=os.path.join(BASE_DIR, "Templates"),
     static_folder=os.path.join(BASE_DIR, "public")
 )
+
+UPLOADED_DATASET_PATH = (
+    "/tmp/uploaded_dataset.tsv"
+    if (os.environ.get("VERCEL") or not os.access(BASE_DIR, os.W_OK))
+    else os.path.join(BASE_DIR, "uploaded_dataset.tsv")
+)
+
+dataset_state = {
+    "df": None,
+    "filename": "SMSSpamCollection",
+    "preprocessed": None,
+    "comparison": None
+}
 
 # In Vercel serverless environments, root is read-only; /tmp is writable
 if os.environ.get("VERCEL") or not os.access(BASE_DIR, os.W_OK):
@@ -285,6 +305,294 @@ def clear_history():
     return jsonify({"message": "Prediction history cleared successfully."})
 
 
+# --------------------------------------------------
+# ADMIN ML WORKFLOW APIS
+# --------------------------------------------------
+
+def load_active_dataset():
+    if dataset_state.get("df") is not None and len(dataset_state["df"]) > 0:
+        return dataset_state["df"]
+
+    if os.path.exists(UPLOADED_DATASET_PATH):
+        try:
+            df = pd.read_csv(UPLOADED_DATASET_PATH, sep="\t")
+            dataset_state["df"] = df
+            return df
+        except Exception as e:
+            print("Failed loading uploaded disk cache:", e)
+
+    default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
+    if os.path.exists(default_path):
+        try:
+            df = pd.read_csv(default_path, sep="\t", names=["label", "text"])
+            dataset_state["df"] = df
+            dataset_state["filename"] = "SMSSpamCollection"
+            return df
+        except Exception as e:
+            print("Failed loading default SMSSpamCollection:", e)
+
+    return None
+
+
+@app.route("/upload-dataset", methods=["POST", "OPTIONS"])
+@app.route("/api/upload-dataset", methods=["POST", "OPTIONS"])
+@app.route("/admin/upload-dataset", methods=["POST", "OPTIONS"])
+@app.route("/api/admin/upload-dataset", methods=["POST", "OPTIONS"])
+def admin_upload_dataset():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+
+    filename = "SMSSpamCollection"
+    df = None
+
+    json_data = request.get_json(silent=True)
+    if json_data and json_data.get("use_default"):
+        default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
+        if not os.path.exists(default_path):
+            return jsonify({"error": "Default SMSSpamCollection file not found."}), 404
+        df = pd.read_csv(default_path, sep="\t", names=["label", "text"])
+        filename = "SMSSpamCollection"
+    elif "file" in request.files:
+        uploaded_file = request.files["file"]
+        if uploaded_file.filename == "":
+            return jsonify({"error": "No selected file."}), 400
+        filename = uploaded_file.filename
+        try:
+            content_bytes = uploaded_file.read()
+            try:
+                content_str = content_bytes.decode("utf-8")
+            except UnicodeDecodeError:
+                content_str = content_bytes.decode("latin-1")
+
+            first_line = content_str.split("\n", 1)[0]
+            sep = "\t" if "\t" in first_line else ","
+
+            try:
+                df = pd.read_csv(io.StringIO(content_str), sep=sep)
+            except Exception:
+                df = pd.read_csv(io.StringIO(content_str), sep=None, engine="python")
+
+            cols_lower = [str(c).strip().lower() for c in df.columns]
+            label_col = None
+            text_col = None
+
+            for orig, low in zip(df.columns, cols_lower):
+                if low in ["label", "class", "target", "category", "v1", "0"]:
+                    label_col = orig
+                elif low in ["text", "message", "sms", "content", "body", "v2", "1"]:
+                    text_col = orig
+
+            if not label_col or not text_col:
+                if len(df.columns) >= 2:
+                    df = df.rename(columns={df.columns[0]: "label", df.columns[1]: "text"})
+                else:
+                    return jsonify({"error": "Dataset must contain at least 2 columns: label and message/text."}), 400
+            else:
+                df = df.rename(columns={label_col: "label", text_col: "text"})
+        except Exception as e:
+            return jsonify({"error": f"Failed to parse dataset: {str(e)}"}), 400
+    else:
+        default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
+        if os.path.exists(default_path):
+            df = pd.read_csv(default_path, sep="\t", names=["label", "text"])
+            filename = "SMSSpamCollection"
+        else:
+            return jsonify({"error": "No dataset file provided."}), 400
+
+    if df is None or len(df) == 0:
+        return jsonify({"error": "Dataset is empty."}), 400
+
+    total_records = len(df)
+    num_columns = len(df.columns)
+    column_names = list(df.columns)
+
+    labels_series = df["label"].astype(str).str.strip().str.lower()
+    ham_count = int((labels_series.isin(["ham", "0", "legit", "clean"])).sum())
+    spam_count = int((labels_series.isin(["spam", "1"])).sum())
+
+    dataset_state["df"] = df
+    dataset_state["filename"] = filename
+    dataset_state["preprocessed"] = None
+    dataset_state["comparison"] = None
+
+    try:
+        df.to_csv(UPLOADED_DATASET_PATH, sep="\t", index=False)
+    except Exception as e:
+        print("Upload disk cache note:", e)
+
+    return jsonify({
+        "status": "success",
+        "filename": filename,
+        "total_records": total_records,
+        "num_columns": num_columns,
+        "column_names": column_names,
+        "ham_count": ham_count,
+        "spam_count": spam_count,
+        "message": f"Dataset '{filename}' successfully loaded ({total_records:,} records)."
+    })
+
+
+@app.route("/preprocess", methods=["POST", "OPTIONS"])
+@app.route("/api/preprocess", methods=["POST", "OPTIONS"])
+@app.route("/admin/preprocess", methods=["POST", "OPTIONS"])
+@app.route("/api/admin/preprocess", methods=["POST", "OPTIONS"])
+def admin_preprocess_dataset():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+
+    df = load_active_dataset()
+    if df is None or len(df) == 0:
+        return jsonify({"error": "No dataset found. Please upload a dataset first."}), 400
+
+    orig_count = len(df)
+
+    df_clean = df.dropna(subset=["label", "text"]).copy()
+
+    label_norm = df_clean["label"].astype(str).str.strip().str.lower()
+    label_map = {"ham": 0, "0": 0, "legit": 0, "clean": 0, "spam": 1, "1": 1}
+    target_series = label_norm.map(label_map)
+    df_clean = df_clean[target_series.notna()].copy()
+    df_clean["target"] = target_series.astype(int)
+
+    df_clean["clean_text"] = df_clean["text"].astype(str).str.lower()
+
+    X_vec = vectorizer.transform(df_clean["clean_text"])
+    y = df_clean["target"].values
+
+    ham_count = int((y == 0).sum())
+    spam_count = int((y == 1).sum())
+    processed_count = len(df_clean)
+
+    dataset_state["preprocessed"] = {
+        "X": X_vec,
+        "y": y,
+        "df": df_clean
+    }
+    dataset_state["comparison"] = None
+
+    return jsonify({
+        "status": "success",
+        "original_records": orig_count,
+        "processed_records": processed_count,
+        "ham_count": ham_count,
+        "spam_count": spam_count,
+        "feature_dimensions": [int(X_vec.shape[0]), int(X_vec.shape[1])],
+        "hashing_features": NUM_FEATURES,
+        "norm": "l2",
+        "message": f"Preprocessed {processed_count:,} records into a {X_vec.shape[0]}x{X_vec.shape[1]} feature matrix."
+    })
+
+
+@app.route("/train", methods=["POST", "OPTIONS"])
+@app.route("/api/train", methods=["POST", "OPTIONS"])
+@app.route("/admin/train", methods=["POST", "OPTIONS"])
+@app.route("/api/admin/train", methods=["POST", "OPTIONS"])
+def admin_train_models():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+
+    if dataset_state.get("preprocessed") is None:
+        admin_preprocess_dataset()
+        if dataset_state.get("preprocessed") is None:
+            return jsonify({"error": "Failed to preprocess dataset before training."}), 400
+
+    prep = dataset_state["preprocessed"]
+    X = prep["X"]
+    y = prep["y"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    model_defs = {
+        "SGDClassifier": SGDClassifier(
+            loss="log_loss",
+            penalty="l1",
+            alpha=1e-4,
+            max_iter=1000,
+            random_state=42,
+            class_weight="balanced"
+        ),
+        "Multinomial Naive Bayes": MultinomialNB(alpha=1.0),
+        "Logistic Regression": LogisticRegression(
+            max_iter=1000,
+            random_state=42,
+            class_weight="balanced"
+        ),
+        "Linear SVM": LinearSVC(
+            random_state=42,
+            class_weight="balanced"
+        )
+    }
+
+    results = []
+    best_model_name = ""
+    best_f1 = -1.0
+
+    for name, clf in model_defs.items():
+        t0 = time.time()
+        clf.fit(X_train, y_train)
+        train_time_ms = round((time.time() - t0) * 1000, 2)
+
+        y_pred = clf.predict(X_test)
+
+        acc = round(float(accuracy_score(y_test, y_pred) * 100), 2)
+        prec = round(float(precision_score(y_test, y_pred, pos_label=1, zero_division=0) * 100), 2)
+        rec = round(float(recall_score(y_test, y_pred, pos_label=1, zero_division=0) * 100), 2)
+        f1 = round(float(f1_score(y_test, y_pred, pos_label=1, zero_division=0) * 100), 2)
+
+        if f1 > best_f1:
+            best_f1 = f1
+            best_model_name = name
+
+        results.append({
+            "name": name,
+            "accuracy": acc,
+            "precision": prec,
+            "recall": rec,
+            "f1_score": f1,
+            "train_time_ms": train_time_ms,
+            "is_live_model": (name == "SGDClassifier")
+        })
+
+    dataset_state["comparison"] = {
+        "train_samples": int(X_train.shape[0]),
+        "test_samples": int(X_test.shape[0]),
+        "best_model": best_model_name,
+        "models": results,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    return jsonify({
+        "status": "success",
+        "data": dataset_state["comparison"],
+        "message": f"Successfully trained and evaluated {len(results)} algorithms on {X_train.shape[0]} train / {X_test.shape[0]} test samples."
+    })
+
+
+@app.route("/comparison", methods=["GET", "OPTIONS"])
+@app.route("/api/comparison", methods=["GET", "OPTIONS"])
+@app.route("/admin/comparison", methods=["GET", "OPTIONS"])
+@app.route("/api/admin/comparison", methods=["GET", "OPTIONS"])
+def admin_get_comparison():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+
+    if dataset_state.get("comparison") is None:
+        admin_train_models()
+
+    if dataset_state.get("comparison") is None:
+        return jsonify({"error": "No comparison data available."}), 404
+
+    return jsonify({
+        "status": "success",
+        "data": dataset_state["comparison"]
+    })
+
+
 # Vercel catch-all router for rewritten requests targeting /api/index
 @app.route("/api/index", methods=["GET", "POST", "DELETE", "OPTIONS"])
 @app.route("/api/index/", methods=["GET", "POST", "DELETE", "OPTIONS"])
@@ -295,7 +603,7 @@ def vercel_index_catchall():
     action = request.args.get("action", "").strip().lower()
     target = (request.headers.get("x-matched-path", "") or request.path).lower()
 
-    if action == "predict" or "predict" in target or request.method == "POST":
+    if action == "predict" or "predict" in target or (request.method == "POST" and "predict" in target):
         return predict()
     elif action == "clear-history" or "clear-history" in target or request.method == "DELETE":
         return clear_history()
@@ -305,6 +613,14 @@ def vercel_index_catchall():
         return stats()
     elif action == "health" or "health" in target:
         return health()
+    elif action in ["admin-upload", "upload-dataset"] or "upload-dataset" in target:
+        return admin_upload_dataset()
+    elif action in ["admin-preprocess", "preprocess"] or "preprocess" in target:
+        return admin_preprocess_dataset()
+    elif action in ["admin-train", "train"] or "train" in target:
+        return admin_train_models()
+    elif action in ["admin-comparison", "comparison"] or "comparison" in target:
+        return admin_get_comparison()
     elif action == "dashboard" or "admin/dashboard" in target:
         return render_template("dashboard.html")
     elif action == "admin" or "admin" in target:

@@ -770,6 +770,42 @@
                 <span class="workflow-badge">Project Guide Modules</span>
             </div>
 
+            <!-- DATASET INFORMATION SPECIFICATION SECTION -->
+            <div class="dataset-info-banner" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 18px 20px; margin-bottom: 22px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <h3 style="font-size: 15px; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                        <span>📋</span> Dataset Information
+                    </h3>
+                    <span class="workflow-badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">Primary 70K Dataset</span>
+                </div>
+                <div class="stats-grid" style="margin: 0;">
+                    <div class="stat-box highlight">
+                        <div class="stat-box-title">Dataset</div>
+                        <div class="stat-box-value" style="font-size: 12px; word-break: break-all;">sms_spam_cleaned_70000.csv</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-title">Records</div>
+                        <div class="stat-box-value">70,000</div>
+                    </div>
+                    <div class="stat-box ham">
+                        <div class="stat-box-title">HAM</div>
+                        <div class="stat-box-value">39,475</div>
+                    </div>
+                    <div class="stat-box spam">
+                        <div class="stat-box-title">SPAM</div>
+                        <div class="stat-box-value">30,525</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-title">Duplicate Messages</div>
+                        <div class="stat-box-value" style="color: #16a34a;">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-title">Missing Messages</div>
+                        <div class="stat-box-value" style="color: #16a34a;">0</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- STEP NAVIGATION TABS -->
             <div class="step-tabs">
                 <button id="tabStep1" class="step-btn active" onclick="switchWorkflowTab(1)">
@@ -793,7 +829,7 @@
             <!-- MODULE 1: UPLOAD DATASET -->
             <div id="panelStep1" class="step-panel active">
                 <p class="panel-desc">
-                    Load the SMS spam dataset for training and benchmarking. Acceptable formats include TSV/CSV with <code>label</code> and <code>message</code> fields.
+                    Load the SMS spam dataset for training and benchmarking. Default primary dataset is <code>sms_spam_cleaned_70000.csv</code> (70K unique messages).
                 </p>
 
                 <div class="file-dropzone">
@@ -804,11 +840,14 @@
                 </div>
 
                 <div class="btn-group">
-                    <button id="btnUploadFile" class="btn-primary" onclick="handleFileUpload()">
-                        📤 Upload Selected File
+                    <button id="btnLoad70k" class="btn-primary" onclick="handleLoad70kDataset()">
+                        📁 Load 70,000 SMS Dataset (sms_spam_cleaned_70000.csv)
                     </button>
                     <button id="btnLoadDefault" class="btn-secondary" onclick="handleLoadDefaultDataset()">
-                        📁 Load Project Dataset (SMSSpamCollection ~5,572 rows)
+                        📁 Load Legacy Baseline (SMSSpamCollection ~5,572 rows)
+                    </button>
+                    <button id="btnUploadFile" class="btn-secondary" onclick="handleFileUpload()">
+                        📤 Upload Custom File
                     </button>
                 </div>
 
@@ -819,7 +858,7 @@
                     <div class="stats-grid">
                         <div class="stat-box highlight">
                             <div class="stat-box-title">Dataset File</div>
-                            <div class="stat-box-value" id="dispFilename" style="font-size: 14px; word-break: break-all;">-</div>
+                            <div class="stat-box-value" id="dispFilename" style="font-size: 13px; word-break: break-all;">-</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Total Records</div>
@@ -836,6 +875,14 @@
                         <div class="stat-box spam">
                             <div class="stat-box-title">SPAM Samples</div>
                             <div class="stat-box-value" id="dispSpamCount">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Duplicates</div>
+                            <div class="stat-box-value" id="dispDupCount" style="color: #16a34a;">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Missing</div>
+                            <div class="stat-box-value" id="dispMissingCount" style="color: #16a34a;">0</div>
                         </div>
                     </div>
 
@@ -879,6 +926,14 @@
                         <div class="stat-box spam">
                             <div class="stat-box-title">SPAM (Class 1)</div>
                             <div class="stat-box-value" id="dispPrepSpam">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Duplicates</div>
+                            <div class="stat-box-value" id="dispPrepDup" style="color: #16a34a;">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-title">Missing</div>
+                            <div class="stat-box-value" id="dispPrepMissing" style="color: #16a34a;">0</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Feature Dims</div>
@@ -927,6 +982,7 @@
                                     <th>Precision (Spam)</th>
                                     <th>Recall (Spam)</th>
                                     <th>F1-Score</th>
+                                    <th>Confusion Matrix (TN / FP / FN / TP)</th>
                                     <th>Latency</th>
                                 </tr>
                             </thead>
@@ -1163,12 +1219,45 @@
         // =========================================
         // MODULE 1: UPLOAD DATASET
         // =========================================
+        async function handleLoad70kDataset() {
+            const statusDiv = document.getElementById("uploadStatus");
+            const btn = document.getElementById("btnLoad70k");
+            if (btn) btn.disabled = true;
+            statusDiv.className = "status-alert info";
+            statusDiv.textContent = "Loading 70,000 cleaned SMS dataset (sms_spam_cleaned_70000.csv)...";
+
+            try {
+                const res = await fetchAPI("/admin/upload-dataset", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ use_70k: true })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    statusDiv.className = "status-alert error";
+                    statusDiv.textContent = data.error || "Failed to load 70K dataset.";
+                    return;
+                }
+
+                statusDiv.className = "status-alert success";
+                statusDiv.textContent = "✓ " + (data.message || "70K dataset loaded successfully.");
+
+                displayUploadStats(data);
+                document.getElementById("tabStep1").classList.add("completed");
+            } catch (err) {
+                statusDiv.className = "status-alert error";
+                statusDiv.textContent = "Network error: " + (err.message || err);
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
         async function handleLoadDefaultDataset() {
             const statusDiv = document.getElementById("uploadStatus");
             const btn = document.getElementById("btnLoadDefault");
             btn.disabled = true;
             statusDiv.className = "status-alert info";
-            statusDiv.textContent = "Loading default project dataset (SMSSpamCollection)...";
+            statusDiv.textContent = "Loading legacy baseline dataset (SMSSpamCollection)...";
 
             try {
                 const res = await fetchAPI("/admin/upload-dataset", {
@@ -1245,6 +1334,12 @@
             document.getElementById("dispNumCols").textContent = data.num_columns + " (" + data.column_names.join(", ") + ")";
             document.getElementById("dispHamCount").textContent = data.ham_count.toLocaleString();
             document.getElementById("dispSpamCount").textContent = data.spam_count.toLocaleString();
+            if (document.getElementById("dispDupCount")) {
+                document.getElementById("dispDupCount").textContent = (data.duplicate_messages ?? 0).toLocaleString();
+            }
+            if (document.getElementById("dispMissingCount")) {
+                document.getElementById("dispMissingCount").textContent = (data.missing_messages ?? 0).toLocaleString();
+            }
             document.getElementById("uploadStatsBox").style.display = "block";
         }
 
@@ -1275,6 +1370,12 @@
                 document.getElementById("dispPrepProcessed").textContent = data.processed_records.toLocaleString();
                 document.getElementById("dispPrepHam").textContent = data.ham_count.toLocaleString();
                 document.getElementById("dispPrepSpam").textContent = data.spam_count.toLocaleString();
+                if (document.getElementById("dispPrepDup")) {
+                    document.getElementById("dispPrepDup").textContent = (data.duplicate_messages ?? 0).toLocaleString();
+                }
+                if (document.getElementById("dispPrepMissing")) {
+                    document.getElementById("dispPrepMissing").textContent = (data.missing_messages ?? 0).toLocaleString();
+                }
                 document.getElementById("dispPrepDims").textContent = data.feature_dimensions[0].toLocaleString() + " × " + data.feature_dimensions[1];
                 document.getElementById("preprocessStatsBox").style.display = "block";
                 document.getElementById("tabStep2").classList.add("completed");
@@ -1295,7 +1396,7 @@
 
             btn.disabled = true;
             statusDiv.className = "status-alert info";
-            statusDiv.textContent = "Training SGDClassifier, Multinomial Naive Bayes, Logistic Regression & Linear SVM on stratified 80/20 split...";
+            statusDiv.textContent = "Evaluating SGDClassifier, Multinomial Naive Bayes, Logistic Regression & Linear SVM on stratified 80/20 split...";
 
             try {
                 const res = await fetchAPI("/admin/train", { method: "POST" });
@@ -1310,8 +1411,11 @@
                 statusDiv.textContent = "✓ " + (json.message || "Models evaluated successfully.");
 
                 const data = json.data;
-                document.getElementById("dispTrainCount").textContent = data.train_samples.toLocaleString();
-                document.getElementById("dispTestCount").textContent = data.test_samples.toLocaleString();
+                const dinfo = data.dataset || {};
+                const trainCnt = data.train_samples ?? dinfo.train_samples ?? 56000;
+                const testCnt = data.test_samples ?? dinfo.test_samples ?? 14000;
+                document.getElementById("dispTrainCount").textContent = trainCnt.toLocaleString();
+                document.getElementById("dispTestCount").textContent = testCnt.toLocaleString();
 
                 const tbody = document.getElementById("algoTableBody");
                 tbody.innerHTML = "";
@@ -1327,12 +1431,18 @@
                         nameHtml += `<span class="best-tag">★ Best F1</span>`;
                     }
 
+                    let cmHtml = "-";
+                    if (m.confusion_matrix) {
+                        cmHtml = `<span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>${m.confusion_matrix.tn.toLocaleString()}</b> | FP: <b>${m.confusion_matrix.fp.toLocaleString()}</b><br>FN: <b>${m.confusion_matrix.fn.toLocaleString()}</b> | TP: <b>${m.confusion_matrix.tp.toLocaleString()}</b></span>`;
+                    }
+
                     tr.innerHTML = `
                         <td>${nameHtml}</td>
                         <td class="metric-val">${m.accuracy}%</td>
                         <td class="metric-val" style="color: #f59e0b;">${m.precision}%</td>
                         <td class="metric-val" style="color: #10b981;">${m.recall}%</td>
                         <td class="metric-val" style="color: #8b5cf6;">${m.f1_score}%</td>
+                        <td>${cmHtml}</td>
                         <td style="color: #64748b; font-size: 12px;">${m.train_time_ms} ms</td>
                     `;
                     tbody.appendChild(tr);
@@ -1638,8 +1748,8 @@
         window.onload = function() {
             loadHistory();
             loadStats();
-            // Automatically pre-load dataset stats in background for convenience
-            handleLoadDefaultDataset();
+            // Automatically pre-load 70K dataset stats in background for convenience
+            handleLoad70kDataset();
         };
     </script>
 

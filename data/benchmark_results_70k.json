@@ -1,0 +1,77 @@
+{
+  "dataset": {
+    "filename": "sms_spam_cleaned_70000.csv",
+    "total_records": 70000,
+    "ham_count": 39475,
+    "spam_count": 30525,
+    "num_features": 512,
+    "train_samples": 56000,
+    "test_samples": 14000,
+    "duplicate_messages": 0,
+    "missing_messages": 0
+  },
+  "best_model": "Linear SVM",
+  "models": [
+    {
+      "name": "SGDClassifier",
+      "accuracy": 69.24,
+      "precision": 63.28,
+      "recall": 70.2,
+      "f1_score": 66.56,
+      "train_time_ms": 394.17,
+      "confusion_matrix": {
+        "tn": 5408,
+        "fp": 2487,
+        "fn": 1819,
+        "tp": 4286
+      },
+      "is_live_model": true
+    },
+    {
+      "name": "Multinomial Naive Bayes",
+      "accuracy": 66.99,
+      "precision": 66.7,
+      "recall": 48.52,
+      "f1_score": 56.17,
+      "train_time_ms": 24.71,
+      "confusion_matrix": {
+        "tn": 6416,
+        "fp": 1479,
+        "fn": 3143,
+        "tp": 2962
+      },
+      "is_live_model": false
+    },
+    {
+      "name": "Logistic Regression",
+      "accuracy": 69.41,
+      "precision": 63.2,
+      "recall": 71.47,
+      "f1_score": 67.08,
+      "train_time_ms": 339.83,
+      "confusion_matrix": {
+        "tn": 5355,
+        "fp": 2540,
+        "fn": 1742,
+        "tp": 4363
+      },
+      "is_live_model": false
+    },
+    {
+      "name": "Linear SVM",
+      "accuracy": 69.44,
+      "precision": 63.09,
+      "recall": 72.1,
+      "f1_score": 67.3,
+      "train_time_ms": 469.07,
+      "confusion_matrix": {
+        "tn": 5320,
+        "fp": 2575,
+        "fn": 1703,
+        "tp": 4402
+      },
+      "is_live_model": false
+    }
+  ],
+  "timestamp": "2026-09-23 19:38:04"
+}

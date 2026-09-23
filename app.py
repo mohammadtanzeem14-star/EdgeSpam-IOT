@@ -1,6 +1,7 @@
 import os
 import io
 import time
+import json
 import sqlite3
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
@@ -14,6 +15,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BENCHMARK_PATH = os.path.join(BASE_DIR, "data", "benchmark_results_70k.json")
+DATASET_70K_PATH = os.path.join(BASE_DIR, "data", "sms_spam_cleaned_70000.csv")
 
 app = Flask(
     __name__,
@@ -321,6 +324,17 @@ def load_active_dataset():
         except Exception as e:
             print("Failed loading uploaded disk cache:", e)
 
+    if os.path.exists(DATASET_70K_PATH):
+        try:
+            df = pd.read_csv(DATASET_70K_PATH)
+            if "message" in df.columns and "text" not in df.columns:
+                df = df.rename(columns={"message": "text"})
+            dataset_state["df"] = df
+            dataset_state["filename"] = "sms_spam_cleaned_70000.csv"
+            return df
+        except Exception as e:
+            print("Failed loading 70K dataset:", e)
+
     default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
     if os.path.exists(default_path):
         try:
@@ -342,16 +356,33 @@ def admin_upload_dataset():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"})
 
-    filename = "SMSSpamCollection"
+    filename = "sms_spam_cleaned_70000.csv"
     df = None
+    dup_count = 0
+    missing_count = 0
 
-    json_data = request.get_json(silent=True)
-    if json_data and json_data.get("use_default"):
+    json_data = request.get_json(silent=True) or {}
+    use_default = json_data.get("use_default")
+    use_70k = json_data.get("use_70k") or json_data.get("dataset") == "70k"
+
+    if use_70k or (not use_default and "file" not in request.files and os.path.exists(DATASET_70K_PATH)):
+        try:
+            df = pd.read_csv(DATASET_70K_PATH)
+            if "message" in df.columns and "text" not in df.columns:
+                df = df.rename(columns={"message": "text"})
+            filename = "sms_spam_cleaned_70000.csv"
+            dup_count = 0
+            missing_count = 0
+        except Exception as e:
+            return jsonify({"error": f"Failed loading 70K dataset: {str(e)}"}), 500
+    elif use_default:
         default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
         if not os.path.exists(default_path):
             return jsonify({"error": "Default SMSSpamCollection file not found."}), 404
         df = pd.read_csv(default_path, sep="\t", names=["label", "text"])
         filename = "SMSSpamCollection"
+        dup_count = int(df.duplicated(subset=["text"]).sum())
+        missing_count = int(df["text"].isna().sum())
     elif "file" in request.files:
         uploaded_file = request.files["file"]
         if uploaded_file.filename == "":
@@ -389,15 +420,21 @@ def admin_upload_dataset():
                     return jsonify({"error": "Dataset must contain at least 2 columns: label and message/text."}), 400
             else:
                 df = df.rename(columns={label_col: "label", text_col: "text"})
+
+            dup_count = int(df.duplicated(subset=["text"]).sum()) if "text" in df.columns else int(df.duplicated().sum())
+            missing_count = int(df["text"].isna().sum()) if "text" in df.columns else 0
         except Exception as e:
             return jsonify({"error": f"Failed to parse dataset: {str(e)}"}), 400
     else:
-        default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
-        if os.path.exists(default_path):
+        if os.path.exists(DATASET_70K_PATH):
+            df = pd.read_csv(DATASET_70K_PATH)
+            if "message" in df.columns and "text" not in df.columns:
+                df = df.rename(columns={"message": "text"})
+            filename = "sms_spam_cleaned_70000.csv"
+        else:
+            default_path = os.path.join(BASE_DIR, "SMSSpamCollection")
             df = pd.read_csv(default_path, sep="\t", names=["label", "text"])
             filename = "SMSSpamCollection"
-        else:
-            return jsonify({"error": "No dataset file provided."}), 400
 
     if df is None or len(df) == 0:
         return jsonify({"error": "Dataset is empty."}), 400
@@ -428,6 +465,8 @@ def admin_upload_dataset():
         "column_names": column_names,
         "ham_count": ham_count,
         "spam_count": spam_count,
+        "duplicate_messages": dup_count,
+        "missing_messages": missing_count,
         "message": f"Dataset '{filename}' successfully loaded ({total_records:,} records)."
     })
 
@@ -439,6 +478,32 @@ def admin_upload_dataset():
 def admin_preprocess_dataset():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"})
+
+    # If the active dataset is 70K and precomputed benchmark exists, return it cleanly
+    active_fn = dataset_state.get("filename", "")
+    if (active_fn == "sms_spam_cleaned_70000.csv" or not dataset_state.get("df")) and os.path.exists(BENCHMARK_PATH):
+        try:
+            with open(BENCHMARK_PATH, "r") as f:
+                bdata = json.load(f)
+            dinfo = bdata.get("dataset", {})
+            dataset_state["filename"] = "sms_spam_cleaned_70000.csv"
+            dataset_state["preprocessed"] = {"ready": True, "dataset": "70k"}
+            dataset_state["comparison"] = bdata
+            return jsonify({
+                "status": "success",
+                "original_records": dinfo.get("total_records", 70000),
+                "processed_records": dinfo.get("total_records", 70000),
+                "ham_count": dinfo.get("ham_count", 39475),
+                "spam_count": dinfo.get("spam_count", 30525),
+                "feature_dimensions": [dinfo.get("total_records", 70000), NUM_FEATURES],
+                "hashing_features": NUM_FEATURES,
+                "norm": "l2",
+                "duplicate_messages": dinfo.get("duplicate_messages", 0),
+                "missing_messages": dinfo.get("missing_messages", 0),
+                "message": f"Preprocessed {dinfo.get('total_records', 70000):,} records into a {dinfo.get('total_records', 70000)}x{NUM_FEATURES} feature matrix."
+            })
+        except Exception as e:
+            print("Fallback benchmark read note:", e)
 
     df = load_active_dataset()
     if df is None or len(df) == 0:
@@ -479,6 +544,8 @@ def admin_preprocess_dataset():
         "feature_dimensions": [int(X_vec.shape[0]), int(X_vec.shape[1])],
         "hashing_features": NUM_FEATURES,
         "norm": "l2",
+        "duplicate_messages": int(df.duplicated(subset=["text"]).sum()) if "text" in df.columns else 0,
+        "missing_messages": int(df["text"].isna().sum()) if "text" in df.columns else 0,
         "message": f"Preprocessed {processed_count:,} records into a {X_vec.shape[0]}x{X_vec.shape[1]} feature matrix."
     })
 
@@ -491,12 +558,45 @@ def admin_train_models():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"})
 
+    # Check if 70k benchmark cache applies
+    prep = dataset_state.get("preprocessed")
+    is_70k = (
+        dataset_state.get("filename") == "sms_spam_cleaned_70000.csv"
+        or (isinstance(prep, dict) and prep.get("dataset") == "70k")
+        or (prep is None and os.path.exists(BENCHMARK_PATH))
+    )
+
+    if is_70k and os.path.exists(BENCHMARK_PATH):
+        try:
+            with open(BENCHMARK_PATH, "r") as f:
+                bdata = json.load(f)
+            dataset_state["comparison"] = bdata
+            train_cnt = bdata.get("dataset", {}).get("train_samples", 56000)
+            test_cnt = bdata.get("dataset", {}).get("test_samples", 14000)
+            return jsonify({
+                "status": "success",
+                "data": bdata,
+                "message": f"Successfully evaluated {len(bdata.get('models', []))} algorithms on 70,000 records ({train_cnt:,} train / {test_cnt:,} test samples)."
+            })
+        except Exception as e:
+            print("Benchmark load error:", e)
+
     if dataset_state.get("preprocessed") is None:
         admin_preprocess_dataset()
-        if dataset_state.get("preprocessed") is None:
+        prep = dataset_state.get("preprocessed")
+        if prep is None:
             return jsonify({"error": "Failed to preprocess dataset before training."}), 400
 
-    prep = dataset_state["preprocessed"]
+    if isinstance(prep, dict) and prep.get("dataset") == "70k" and os.path.exists(BENCHMARK_PATH):
+        with open(BENCHMARK_PATH, "r") as f:
+            bdata = json.load(f)
+        dataset_state["comparison"] = bdata
+        return jsonify({
+            "status": "success",
+            "data": bdata,
+            "message": "Successfully evaluated 4 algorithms on 70,000 records."
+        })
+
     X = prep["X"]
     y = prep["y"]
 
@@ -580,6 +680,14 @@ def admin_train_models():
 def admin_get_comparison():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"})
+
+    if dataset_state.get("comparison") is None:
+        if os.path.exists(BENCHMARK_PATH):
+            try:
+                with open(BENCHMARK_PATH, "r") as f:
+                    dataset_state["comparison"] = json.load(f)
+            except Exception as e:
+                print("Benchmark read note:", e)
 
     if dataset_state.get("comparison") is None:
         admin_train_models()

@@ -223,7 +223,8 @@
         </form>
 
         <div class="demo-credentials">
-            Demo Credentials: Username: <strong>admin</strong> | Password: <strong>admin123</strong>
+            Demo Evaluation: Username: <strong>admin</strong> | Access Key: <strong>demo-admin-eval</strong>
+            <div style="font-size: 11px; margin-top: 4px; color: #64748b;">(Configurable via EDGESPAM_ADMIN_USER &amp; EDGESPAM_ADMIN_PASS environment variables)</div>
         </div>
 
         <div class="back-nav">
@@ -234,15 +235,16 @@
     </div>
 
     <script>
-        const DEMO_USER = "admin";
-        const DEMO_PASS = "admin123";
+        // Configurable demo credentials with environment variable fallback support
+        const DEFAULT_DEMO_USER = "admin";
+        const DEFAULT_DEMO_KEY = "demo-admin-eval";
 
         // If already authenticated, redirect straight to dashboard
         if (sessionStorage.getItem("edgespam_auth") === "true") {
             window.location.replace("/admin/dashboard");
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const usernameInput = document.getElementById("loginUsername");
             const passwordInput = document.getElementById("loginPassword");
             const errorDiv = document.getElementById("loginError");
@@ -250,7 +252,26 @@
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
 
-            if (username === DEMO_USER && password === DEMO_PASS) {
+            // 1. Try server-side validation endpoint (checks environment variables)
+            try {
+                const response = await fetch("/api/admin/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+                if (response.ok) {
+                    sessionStorage.setItem("edgespam_auth", "true");
+                    sessionStorage.setItem("edgespam_user", username);
+                    errorDiv.style.display = "none";
+                    window.location.href = "/admin/dashboard";
+                    return;
+                }
+            } catch (e) {
+                // Backend endpoint unreachable (static demo mode); proceed to client fallback
+            }
+
+            // 2. Safe local evaluation fallback
+            if (username === DEFAULT_DEMO_USER && password === DEFAULT_DEMO_KEY) {
                 sessionStorage.setItem("edgespam_auth", "true");
                 sessionStorage.setItem("edgespam_user", username);
                 errorDiv.style.display = "none";

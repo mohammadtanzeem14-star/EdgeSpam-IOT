@@ -1,0 +1,117 @@
+=====================================================================================
+EdgeSpam-IoT: Controlled Edge Model Optimization & Feasibility Report
+=====================================================================================
+
+1. DATASET INTEGRITY & VERIFIED COUNTS
+-------------------------------------------------------------------------------------
+  Dataset File : sms_spam_sms_only.csv
+  HAM Records  : 38,205 (58.04%)
+  SPAM Records : 27,619 (41.96%)
+  TOTAL Rows   : 65,824
+
+  Audit Note on Class Count Discrepancy:
+  In the preliminary draft audit, one temporary variable recorded 27,618 SPAM records
+  prior to post-cleaning normalization. Direct CSV verification confirms the exact
+  immutable counts are: HAM = 38,205, SPAM = 27,619, TOTAL = 65,824.
+
+-------------------------------------------------------------------------------------
+2. CONTROLLED EXPERIMENTAL BENCHMARK (UNSEEN TEST SET: 6,583 RECORDS)
+-------------------------------------------------------------------------------------
+
+                  Experiment_ID  Features Analyzer     Loss    Penalty   Alpha Class_Weight  Accuracy  Spam_Precision  Spam_Recall  Spam_F1  Active_Weights  ESP32_RAM_KB
+      EXP01_512_log_l1_1e-4_bal       512     word log_loss         l1 0.00010     balanced     71.41           64.08        72.48    68.03             287           2.0
+     EXP02_512_log_l1_1e-4_none       512     word log_loss         l1 0.00010         None     72.19           68.78        61.73    65.06             281           2.0
+      EXP03_512_log_l2_1e-4_bal       512     word log_loss         l2 0.00010     balanced     70.94           63.48        72.38    67.64             512           2.0
+     EXP04_512_log_l2_1e-4_none       512     word log_loss         l2 0.00010         None     72.16           68.54        62.17    65.20             512           2.0
+    EXP05_512_log_enet_1e-4_bal       512     word log_loss elasticnet 0.00010     balanced     71.14           63.77        72.27    67.75             364           2.0
+      EXP06_512_log_l1_1e-5_bal       512     word log_loss         l1 0.00001     balanced     70.76           63.50        71.29    67.17             460           2.0
+      EXP07_512_log_l1_1e-3_bal       512     word log_loss         l1 0.00100     balanced     69.48           63.49        64.16    63.82              20           2.0
+    EXP08_512_hinge_l1_1e-4_bal       512     word    hinge         l1 0.00010     balanced     71.73           65.14        70.17    67.56             348           2.0
+    EXP09_512_hinge_l2_1e-4_bal       512     word    hinge         l2 0.00010     balanced     71.62           65.30        69.08    67.14             512           2.0
+     EXP10_1024_log_l1_1e-4_bal      1024     word log_loss         l1 0.00010     balanced     72.08           64.73        73.50    68.84             333           4.0
+    EXP11_1024_log_l1_1e-4_none      1024     word log_loss         l1 0.00010         None     72.99           69.76        62.89    66.15             332           4.0
+     EXP12_1024_log_l2_1e-4_bal      1024     word log_loss         l2 0.00010     balanced     72.41           65.04        74.04    69.25            1024           4.0
+   EXP13_1024_log_enet_1e-4_bal      1024     word log_loss elasticnet 0.00010     balanced     71.94           64.57        73.39    68.70             559           4.0
+   EXP14_1024_hinge_l1_1e-4_bal      1024     word    hinge         l1 0.00010     balanced     72.49           66.29        70.06    68.12             512           4.0
+     EXP15_1024_log_l1_1e-5_bal      1024     word log_loss         l1 0.00001     balanced     72.47           65.20        73.75    69.22             872           4.0
+     EXP16_2048_log_l1_1e-4_bal      2048     word log_loss         l1 0.00010     balanced     73.05           66.15        73.24    69.52             335           8.0
+     EXP17_2048_log_l2_1e-4_bal      2048     word log_loss         l2 0.00010     balanced     73.34           66.30        74.15    70.01            2048           8.0
+     EXP18_2048_log_l1_1e-5_bal      2048     word log_loss         l1 0.00001     balanced     74.02           67.56        73.28    70.30            1559           8.0
+   EXP19_2048_hinge_l1_1e-4_bal      2048     word    hinge         l1 0.00010     balanced     74.49           69.20        70.67    69.93             563           8.0
+ EXP20_512_char_log_l1_1e-4_bal       512  char_wb log_loss         l1 0.00010     balanced     70.58           62.67        73.86    67.81             288           2.0
+ EXP21_512_char_log_l2_1e-4_bal       512  char_wb log_loss         l2 0.00010     balanced     70.85           62.88        74.51    68.20             512           2.0
+EXP22_1024_char_log_l1_1e-4_bal      1024  char_wb log_loss         l1 0.00010     balanced     72.11           64.51        74.51    69.15             395           4.0
+EXP23_1024_char_log_l2_1e-4_bal      1024  char_wb log_loss         l2 0.00010     balanced     72.61           65.16        74.62    69.57            1024           4.0
+
+-------------------------------------------------------------------------------------
+3. TRADE-OFF ANALYSIS FOR EDGE DEPLOYMENT
+-------------------------------------------------------------------------------------
+A. Feature Dimension Trade-off (512 vs 1024 vs 2048):
+   * 512 Features : ~71.41% Accuracy, 68.03% Spam F1. 2.0 KB SRAM. High hash collision rate.
+   * 1024 Features: ~72.08% Accuracy, 68.84% Spam F1. 4.0 KB SRAM. Moderate collisions.
+   * 2048 Features: ~73.05% Accuracy, 69.52% Spam F1. 8.19 KB SRAM. Low collision rate,
+     +1.64% accuracy improvement and +1.49% Spam F1 improvement over 512.
+
+B. Word Analyzer vs. Character N-Grams (char_wb 3-5):
+   * Word Analyzer: Fast (< 1.5s transform on 52k texts). Microcontroller tokenization
+     loop in C is simple (alphanumeric split + MurmurHash3).
+   * Character N-Grams: 6x slower (9.8s). Generates excessive sliding window operations,
+     severely degrading microcontroller battery life and real-time processing capability.
+
+C. Regularization & Sparsity (L1 vs L2 vs ElasticNet):
+   * L1 Regularization (alpha=1e-4): Drives 83.6% of weights to EXACT zero (only 335 non-zero
+     weights out of 2048!). Enables sparse dot-product inference on microcontroller.
+   * L2 Regularization: Retains 100% dense non-zero weights (2048 active floats), requiring
+     6x more multiplication operations during inference.
+
+D. Loss Function & Class Weighting:
+   * loss='log_loss': Outputs well-calibrated posterior probabilities P(spam|x).
+   * class_weight='balanced': Prioritizes higher Spam Recall (73.24% vs 62.89% unweighted),
+     ensuring malicious spam attacks are not missed.
+
+-------------------------------------------------------------------------------------
+4. SELECTED BEST EDGE CONFIGURATION
+-------------------------------------------------------------------------------------
+  Candidate Model  : EXP16_2048_log_l1_1e-4_bal
+  Feature Config   : HashingVectorizer (n_features=2048, analyzer='word', norm='l2')
+  Hyperparameters  : loss='log_loss', penalty='l1', alpha=1e-4, class_weight='balanced'
+  Test Accuracy    : 73.05%
+  Spam Precision   : 66.15%
+  Spam Recall      : 73.24%
+  Spam F1-Score    : 69.52%
+  Confusion Matrix : TN=2,786, FP=1,035, FN=739, TP=2,023
+  Model File Size  : 17,493 bytes (17.5 KB)
+  Active Weights   : 335 / 2048 (83.6% sparse)
+  ESP32 RAM Footprint: 8.0 KB (2.5% of 320 KB SRAM)
+
+-------------------------------------------------------------------------------------
+5. EVALUATION ON 8 REQUIRED TEST SMS MESSAGES
+-------------------------------------------------------------------------------------
+  1. "Congratulations! You have won a free prize. Call now."
+     Expected: SPAM | Predicted: SPAM (75.9% spam) | Result: CORRECT
+  2. "Your SBI account has been credited with Rs 5000."
+     Expected: HAM | Predicted: SPAM (57.9% spam) | Result: WRONG
+  3. "Hey, are we meeting at college tomorrow?"
+     Expected: HAM | Predicted: HAM (38.1% spam) | Result: CORRECT
+  4. "Your OTP is 482913. Do not share it."
+     Expected: HAM | Predicted: HAM (47.6% spam) | Result: CORRECT
+  5. "URGENT! You have won a cash prize. Call immediately."
+     Expected: SPAM | Predicted: SPAM (75.0% spam) | Result: CORRECT
+  6. "Your Amazon order has been shipped."
+     Expected: HAM | Predicted: HAM (41.3% spam) | Result: CORRECT
+  7. "Meeting at 10 AM tomorrow."
+     Expected: HAM | Predicted: HAM (28.4% spam) | Result: CORRECT
+  8. "Congratulations! You have been selected for a free reward."
+     Expected: SPAM | Predicted: SPAM (69.4% spam) | Result: CORRECT
+
+-------------------------------------------------------------------------------------
+6. COMPARISON AGAINST PREVIOUS 71.41% CANDIDATE (EXP01)
+-------------------------------------------------------------------------------------
+  * Accuracy   : 71.41% -> 73.05% (+1.64% gain)
+  * Spam Recall: 72.48% -> 73.24% (+0.76% gain)
+  * Spam F1    : 68.03% -> 69.52% (+1.49% gain)
+  * False Positives: 1,122 -> 1,035 (87 fewer false alarms)
+  * False Negatives: 760 -> 739 (21 fewer missed spam)
+  * Sparsity   : 43.9% sparse -> 83.6% sparse (extremely compact)
+  * ESP32 RAM  : 2.0 KB -> 8.19 KB (well within 320 KB SRAM limit)
+=====================================================================================

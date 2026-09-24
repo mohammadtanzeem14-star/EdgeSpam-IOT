@@ -1,0 +1,102 @@
+================================================================================
+EdgeSpam-IoT: Machine Learning Model Training & Evaluation Report
+================================================================================
+
+Dataset Used         : sms_spam_sms_only.csv
+Total Records        : 65,824
+HAM Records (0)      : 38,205 (58.04%)
+SPAM Records (1)     : 27,619 (41.96%)
+Data Split Ratio     : 80% Train (52,659), 10% Validation (6,582), 10% Test (6,583)
+Random State         : 42
+Feature Dimension    : 512 features
+
+--------------------------------------------------------------------------------
+1. MODEL BENCHMARK RESULTS (TEST SET EVALUATION)
+--------------------------------------------------------------------------------
+
+             Model Feature_Representation  Accuracy  Precision  Recall  F1_Score  Spam_Precision  Spam_Recall  Spam_F1   TN   FP   FN   TP
+     SGDClassifier      HashingVectorizer     71.41      72.18   71.41     71.58           64.08        72.48    68.03 2699 1122  760 2002
+LogisticRegression      HashingVectorizer     71.09      71.71   71.09     71.25           63.99        71.11    67.36 2716 1105  798 1964
+     MultinomialNB      HashingVectorizer     69.31      69.82   69.31     67.57           71.67        44.42    54.85 3336  485 1535 1227
+         LinearSVC      HashingVectorizer     71.08      71.76   71.08     71.24           63.87        71.54    67.49 2703 1118  786 1976
+     SGDClassifier        TfidfVectorizer     73.28      73.74   73.28     73.41           66.67        72.63    69.52 2818 1003  756 2006
+LogisticRegression        TfidfVectorizer     73.29      73.68   73.29     73.41           66.86        72.09    69.37 2834  987  771 1991
+     MultinomialNB        TfidfVectorizer     72.55      72.37   72.55     72.41           68.43        64.19    66.24 3003  818  989 1773
+         LinearSVC        TfidfVectorizer     73.23      73.64   73.23     73.35           66.74        72.16    69.35 2828  993  769 1993
+
+--------------------------------------------------------------------------------
+2. DETAILED PER-CLASS METRICS (HAM vs SPAM)
+--------------------------------------------------------------------------------
+
+Model: SGDClassifier | Feature: HashingVectorizer
+  Overall Accuracy : 71.41%
+  HAM  - Precision : 78.03%, Recall: 70.64%, F1-Score: 74.15%
+  SPAM - Precision : 64.08%, Recall: 72.48%, F1-Score: 68.03%
+  Confusion Matrix : TN=2,699, FP=1,122, FN=760, TP=2,002
+  Training Latency : 256.69 ms
+
+Model: LogisticRegression | Feature: HashingVectorizer
+  Overall Accuracy : 71.09%
+  HAM  - Precision : 77.29%, Recall: 71.08%, F1-Score: 74.06%
+  SPAM - Precision : 63.99%, Recall: 71.11%, F1-Score: 67.36%
+  Confusion Matrix : TN=2,716, FP=1,105, FN=798, TP=1,964
+  Training Latency : 231.57 ms
+
+Model: MultinomialNB | Feature: HashingVectorizer
+  Overall Accuracy : 69.31%
+  HAM  - Precision : 68.49%, Recall: 87.31%, F1-Score: 76.76%
+  SPAM - Precision : 71.67%, Recall: 44.42%, F1-Score: 54.85%
+  Confusion Matrix : TN=3,336, FP=485, FN=1,535, TP=1,227
+  Training Latency : 11.57 ms
+
+Model: LinearSVC | Feature: HashingVectorizer
+  Overall Accuracy : 71.08%
+  HAM  - Precision : 77.47%, Recall: 70.74%, F1-Score: 73.95%
+  SPAM - Precision : 63.87%, Recall: 71.54%, F1-Score: 67.49%
+  Confusion Matrix : TN=2,703, FP=1,118, FN=786, TP=1,976
+  Training Latency : 240.94 ms
+
+Model: SGDClassifier | Feature: TfidfVectorizer
+  Overall Accuracy : 73.28%
+  HAM  - Precision : 78.85%, Recall: 73.75%, F1-Score: 76.21%
+  SPAM - Precision : 66.67%, Recall: 72.63%, F1-Score: 69.52%
+  Confusion Matrix : TN=2,818, FP=1,003, FN=756, TP=2,006
+  Training Latency : 186.01 ms
+
+Model: LogisticRegression | Feature: TfidfVectorizer
+  Overall Accuracy : 73.29%
+  HAM  - Precision : 78.61%, Recall: 74.17%, F1-Score: 76.33%
+  SPAM - Precision : 66.86%, Recall: 72.09%, F1-Score: 69.37%
+  Confusion Matrix : TN=2,834, FP=987, FN=771, TP=1,991
+  Training Latency : 132.89 ms
+
+Model: MultinomialNB | Feature: TfidfVectorizer
+  Overall Accuracy : 72.55%
+  HAM  - Precision : 75.23%, Recall: 78.59%, F1-Score: 76.87%
+  SPAM - Precision : 68.43%, Recall: 64.19%, F1-Score: 66.24%
+  Confusion Matrix : TN=3,003, FP=818, FN=989, TP=1,773
+  Training Latency : 14.04 ms
+
+Model: LinearSVC | Feature: TfidfVectorizer
+  Overall Accuracy : 73.23%
+  HAM  - Precision : 78.62%, Recall: 74.01%, F1-Score: 76.25%
+  SPAM - Precision : 66.74%, Recall: 72.16%, F1-Score: 69.35%
+  Confusion Matrix : TN=2,828, FP=993, FN=769, TP=1,993
+  Training Latency : 401.88 ms
+
+--------------------------------------------------------------------------------
+3. CANDIDATE SELECTION & ARCHITECTURAL RATIONALE
+--------------------------------------------------------------------------------
+Selected Candidate: SGDClassifier (HashingVectorizer, 512 features)
+
+Rationale:
+1. Edge Hardware Compatibility (ESP32): The EdgeSpam-IoT edge inference node
+   runs on an ESP32 microcontroller with strict SRAM/Flash constraints. HashingVectorizer
+   operates with ZERO dictionary storage overhead by hashing tokens directly into 512 bins.
+2. Sparse L1 Regularization: SGDClassifier with penalty='l1' forces non-essential
+   weights to exact zero, allowing lightweight C header export (model_weights.h).
+3. Probability Output: Configured with loss='log_loss', enabling calibrated spam
+   confidence scores via predict_proba() for both API and Edge interfaces.
+4. Top Edge Performance: Achieved highest Spam Recall (72.48%) and Spam F1 (68.03%)
+   among all edge-compatible hashing models on the unseen test set.
+================================================================================

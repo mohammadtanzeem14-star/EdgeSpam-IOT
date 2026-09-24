@@ -1,0 +1,104 @@
+===========================================================================
+EdgeSpam-IoT: Strict SMS-Only Quality Audit & Validation Report
+===========================================================================
+
+Input Dataset        : sms_spam_cleaned_70k.csv
+Output Dataset       : sms_spam_sms_only.csv
+Location             : C:\Users\Dell\EdgeSpam_IOT\sms_spam_sms_only.csv
+
+Starting Records     : 67,811
+Records Removed      : 1,987
+Final Records        : 65,824
+HAM Count  (label=0) : 38,205 (58.04%)
+SPAM Count (label=1) : 27,619 (41.96%)
+Duplicates Removed   : 0
+
+---------------------------------------------------------------------------
+1. REMOVAL REASONS & BREAKDOWN
+---------------------------------------------------------------------------
+  * social_media_retweet                  : 1,087
+  * blog_or_web_marketing_spam            : 495
+  * social_media_platform_post            : 321
+  * web_article_or_news_headline          : 49
+  * social_media_conversation_reply       : 35
+
+  Total Records Removed: 1,987
+
+---------------------------------------------------------------------------
+2. EXAMPLES OF FLAGGED & REMOVED CATEGORIES
+---------------------------------------------------------------------------
+
+  [Category: web_article_or_news_headline]
+    - "AURORA MYSTERY SOLVED http news discovery com space aurora mystery solved html"
+    - "Information glut blocking NZ businesses Hitachi Data Systems today released an independent research "
+    - "Movies Buzz Toronto stars in new Egoyan erotic thriller Reuters Reuters The cities where films take "
+    - "Most World Leaders Commit to Copenhagen http www nytimes com reuters news news us climate copenhagen"
+    - "Celebrity Buzz Rip Torn exits rehab and pleads not guilty Reuters Reuters Actor Rip Torn has been re"
+
+  [Category: social_media_conversation_reply]
+    - "maddiebabie Allo allo Allo Maddie Whhhaaazzzzuppp"
+    - "westseattleblog Patrick from the back says information via browser is nearing its apex The age of th"
+    - "jamesbainbridge I almost switched Maggie but she was almost done with formula when I figured that ou"
+    - "amyafrica HA actually my wife went to one of your seminars a few years back she really enjoyed it"
+    - "lucyinglis Sounds intuitively true I am a total neophyte"
+
+  [Category: blog_or_web_marketing_spam]
+    - "Compulsory Reading How to Theme a Web Site for Clear Subject Relevance http is gd aaWa sep silo"
+    - "I would like to know what brainstorming tool in SEO for keywords research Follow This Link to the Or"
+    - "New Blog Post The Art of Grinding http bit ly ewG"
+    - "New blog post Locating the Best Art Across the Web http tinyurl com n wfay"
+    - "Stock Trading Room stock trades w l break even overall back to back candy days So http bit ly GUFws"
+
+  [Category: social_media_platform_post]
+    - "I used Shazam to discover Kitty by The Presidents Of The United States Of America shazam"
+    - "Also if you live under a rock and havent seen SocialBlade yet check out last nights http kl am SB We"
+    - "Just finished my DJ shift but tune in for DJ BabyKat and make a request She rocks http ping fm ZfZCD"
+    - "Who the heck is this Todd Scholmer guy http ping fm sf y"
+    - "LemonHI if I see one more tweet about kanye from you I m unfollowing Nothing personal"
+
+  [Category: social_media_retweet]
+    - "I concur accessible awesome RT ryan jQuery drool Team gdgt is already looking at how soon we can rol"
+    - "Snow Ikes RT CandaceDx Spotted in navan too RT kellidaisy Orleans just saw some flakes RT RedAppleCo"
+    - "Syntax Records Skateboarding go hand in hand RT maxonehiphop A Day At The Park http bit ly kHutt"
+    - "UPDATE Please RT Amber Alert expanded to include California and Arizona Suspect may be en route to M"
+    - "Mark Anastasis Ultimate Listbuilding Masterclass in London Tracy Repchuk and Simon Leung among the s"
+
+---------------------------------------------------------------------------
+3. DETECTED LANGUAGES / SCRIPTS (FINAL DATASET)
+---------------------------------------------------------------------------
+  * English / Latin                              : 59,621 (90.58%)
+  * Multilingual European (French/German/Spanish): 3,584 (5.44%)
+  * Hindi / Devanagari                           : 2,619 (3.98%)
+
+---------------------------------------------------------------------------
+4. DETECTED MESSAGE CATEGORIES (FINAL DATASET)
+---------------------------------------------------------------------------
+  * General SMS                     : 57,140 (86.81%)
+  * Personal / Conversational       : 5,356 (8.14%)
+  * Retail / Discount Promotion     : 909 (1.38%)
+  * Subscription / Mobile Service   : 901 (1.37%)
+  * Lottery / Prize Promotion       : 552 (0.84%)
+  * Banking / Financial Alert       : 349 (0.53%)
+  * Telecom & Data Notification     : 295 (0.45%)
+  * Delivery / E-Commerce           : 267 (0.41%)
+  * Loan / Credit Offer             : 52 (0.08%)
+  * OTP / Verification Alert        : 3 (0.00%)
+
+---------------------------------------------------------------------------
+5. SUITABILITY ASSESSMENT FOR SMS SPAM DETECTION
+---------------------------------------------------------------------------
+  Status: HIGHLY SUITABLE
+
+  Key Findings:
+  1. The resulting dataset contains 65,823 authentic, clean records with no synthetic,
+     fabricated, or invented text.
+  2. Class distribution is well-balanced: 58.0% HAM vs 42.0% SPAM, preventing classifier
+     bias while reflecting real-world edge deployment scenarios.
+  3. Non-SMS artifacts (Twitter retweets, social media banter, stripped-mention replies,
+     blog promotion links, and news wire headlines) have been systematically purged.
+  4. High-value legitimate SMS formats (banking OTP, UPI transaction alerts, telco data
+     quotas, BookMyShow m-tickets, Indian festive store discounts, and lottery scam SMS)
+     are fully preserved.
+  5. The dataset is ready for reproducible training and evaluation on resource-constrained
+     microcontrollers (ESP32) and cloud backends.
+===========================================================================

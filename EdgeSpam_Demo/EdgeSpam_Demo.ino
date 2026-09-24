@@ -4,7 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define NUM_FEATURES 512
+#define NUM_FEATURES 2048
 
 // OLED
 #define SCREEN_WIDTH 128
@@ -271,7 +271,7 @@ void loop() {
       return;
     }
 
-    float features[NUM_FEATURES];
+    static float features[NUM_FEATURES];
 
     createFeatures(message, features);
 

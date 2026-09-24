@@ -1,0 +1,79 @@
+{
+  "pipeline": "validate_sms_only.py",
+  "input_dataset": "sms_spam_cleaned_70k.csv",
+  "output_dataset": "sms_spam_sms_only.csv",
+  "starting_records": 67811,
+  "records_removed": 1987,
+  "final_records": 65824,
+  "ham_count": 38205,
+  "spam_count": 27619,
+  "ham_percentage": 58.04,
+  "spam_percentage": 41.96,
+  "duplicate_count": 0,
+  "removal_reasons": {
+    "web_article_or_news_headline": 49,
+    "social_media_conversation_reply": 35,
+    "blog_or_web_marketing_spam": 495,
+    "social_media_platform_post": 321,
+    "social_media_retweet": 1087
+  },
+  "category_samples": {
+    "web_article_or_news_headline": [
+      "AURORA MYSTERY SOLVED http news discovery com space aurora mystery solved html",
+      "Information glut blocking NZ businesses Hitachi Data Systems today released an independent research ",
+      "Movies Buzz Toronto stars in new Egoyan erotic thriller Reuters Reuters The cities where films take ",
+      "Most World Leaders Commit to Copenhagen http www nytimes com reuters news news us climate copenhagen",
+      "Celebrity Buzz Rip Torn exits rehab and pleads not guilty Reuters Reuters Actor Rip Torn has been re"
+    ],
+    "social_media_conversation_reply": [
+      "maddiebabie Allo allo Allo Maddie Whhhaaazzzzuppp",
+      "westseattleblog Patrick from the back says information via browser is nearing its apex The age of th",
+      "jamesbainbridge I almost switched Maggie but she was almost done with formula when I figured that ou",
+      "amyafrica HA actually my wife went to one of your seminars a few years back she really enjoyed it",
+      "lucyinglis Sounds intuitively true I am a total neophyte"
+    ],
+    "blog_or_web_marketing_spam": [
+      "Compulsory Reading How to Theme a Web Site for Clear Subject Relevance http is gd aaWa sep silo",
+      "I would like to know what brainstorming tool in SEO for keywords research Follow This Link to the Or",
+      "New Blog Post The Art of Grinding http bit ly ewG",
+      "New blog post Locating the Best Art Across the Web http tinyurl com n wfay",
+      "Stock Trading Room stock trades w l break even overall back to back candy days So http bit ly GUFws"
+    ],
+    "social_media_platform_post": [
+      "I used Shazam to discover Kitty by The Presidents Of The United States Of America shazam",
+      "Also if you live under a rock and havent seen SocialBlade yet check out last nights http kl am SB We",
+      "Just finished my DJ shift but tune in for DJ BabyKat and make a request She rocks http ping fm ZfZCD",
+      "Who the heck is this Todd Scholmer guy http ping fm sf y",
+      "LemonHI if I see one more tweet about kanye from you I m unfollowing Nothing personal"
+    ],
+    "social_media_retweet": [
+      "I concur accessible awesome RT ryan jQuery drool Team gdgt is already looking at how soon we can rol",
+      "Snow Ikes RT CandaceDx Spotted in navan too RT kellidaisy Orleans just saw some flakes RT RedAppleCo",
+      "Syntax Records Skateboarding go hand in hand RT maxonehiphop A Day At The Park http bit ly kHutt",
+      "UPDATE Please RT Amber Alert expanded to include California and Arizona Suspect may be en route to M",
+      "Mark Anastasis Ultimate Listbuilding Masterclass in London Tracy Repchuk and Simon Leung among the s"
+    ]
+  },
+  "languages_detected": {
+    "English / Latin": 59621,
+    "Multilingual European (French/German/Spanish)": 3584,
+    "Hindi / Devanagari": 2619
+  },
+  "categories_detected": {
+    "General SMS": 57140,
+    "Personal / Conversational": 5356,
+    "Lottery / Prize Promotion": 552,
+    "Subscription / Mobile Service": 901,
+    "Delivery / E-Commerce": 267,
+    "Banking / Financial Alert": 349,
+    "Retail / Discount Promotion": 909,
+    "Loan / Credit Offer": 52,
+    "Telecom & Data Notification": 295,
+    "OTP / Verification Alert": 3
+  },
+  "suitability_for_sms_spam_detection": {
+    "is_suitable": true,
+    "conclusion": "The validated dataset is highly suitable for training production-grade edge SMS spam detectors. It retains an optimal balance (58.0% HAM / 42.0% SPAM), preserves genuine Indian telecom, banking, and retail alerts, maintains multilingual SMS capabilities, and eliminates spurious social media / Twitter noise that would distort edge feature distributions.",
+    "sufficiency_note": "Contains 65,824 real unique SMS records. In strict compliance with instructions, no synthetic or fabricated data was added to artificially reach 70,000."
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "pipeline_version": "1.0.0",
+  "output_file": "C:\\Users\\Dell\\EdgeSpam_IOT\\sms_spam_cleaned_70k.csv",
+  "exact_final_row_count": 67811,
+  "ham_count": 38906,
+  "spam_count": 28905,
+  "ham_percentage": 57.37,
+  "spam_percentage": 42.63,
+  "sources_used": [
+    "SMSSpamCollection",
+    "uploaded_dataset.tsv"
+  ],
+  "source_statistics": {
+    "SMSSpamCollection": {
+      "original_rows": 5574,
+      "text_col": "1",
+      "label_col": "0"
+    },
+    "uploaded_dataset.tsv": {
+      "original_rows": 70000,
+      "text_col": "text",
+      "label_col": "label"
+    }
+  },
+  "total_raw_rows": 75574,
+  "invalid_corrupted_removed": 4800,
+  "rejection_breakdown": {
+    "excessively_long_non_sms": 41,
+    "corrupted_no_alphanumeric": 7,
+    "social_media_jargon": 1084,
+    "twitter_retweet": 3648,
+    "corrupted_question_marks": 5,
+    "too_short": 15
+  },
+  "duplicates_removed": 2963,
+  "languages_detected": {
+    "English / Latin": 61608,
+    "Multilingual European (French/German/Spanish)": 3584,
+    "Hindi / Devanagari": 2619
+  },
+  "categories_detected": {
+    "General SMS": 58836,
+    "Personal / Conversational": 5596,
+    "Lottery / Prize Promotion": 562,
+    "Subscription / Mobile Service": 917,
+    "Delivery / E-Commerce": 274,
+    "Banking / Financial Alert": 350,
+    "Retail / Discount Promotion": 926,
+    "Loan / Credit Offer": 52,
+    "Telecom & Data Notification": 295,
+    "OTP / Verification Alert": 3
+  },
+  "sms_purity_assessment": {
+    "contains_only_sms_data": false,
+    "notes": "The source uploaded_dataset.tsv is a hybrid corpus containing real SMS (UCI SMS, multilingual translated SMS, and Indian transaction/telecom alerts) mixed with historical Twitter and web promotional data. While filtering removed explicit retweets, jargon, and bare URLs, some conversational web text remains. Pure SMS collection SMSSpamCollection provides 5,157 unique verified SMS records."
+  },
+  "sufficiency_assessment": {
+    "is_sufficient_for_70k": false,
+    "target": 70000,
+    "actual_unique_available": 67811,
+    "deficit": 2189,
+    "compliance_note": "Rule 15 strictly observed: no synthetic records fabricated."
+  }
+}

@@ -1,0 +1,9 @@
+Model,Feature_Representation,Accuracy,Precision,Recall,F1_Score,Spam_Precision,Spam_Recall,Spam_F1,TN,FP,FN,TP
+SGDClassifier,HashingVectorizer,71.41,72.18,71.41,71.58,64.08,72.48,68.03,2699,1122,760,2002
+LogisticRegression,HashingVectorizer,71.09,71.71,71.09,71.25,63.99,71.11,67.36,2716,1105,798,1964
+MultinomialNB,HashingVectorizer,69.31,69.82,69.31,67.57,71.67,44.42,54.85,3336,485,1535,1227
+LinearSVC,HashingVectorizer,71.08,71.76,71.08,71.24,63.87,71.54,67.49,2703,1118,786,1976
+SGDClassifier,TfidfVectorizer,73.28,73.74,73.28,73.41,66.67,72.63,69.52,2818,1003,756,2006
+LogisticRegression,TfidfVectorizer,73.29,73.68,73.29,73.41,66.86,72.09,69.37,2834,987,771,1991
+MultinomialNB,TfidfVectorizer,72.55,72.37,72.55,72.41,68.43,64.19,66.24,3003,818,989,1773
+LinearSVC,TfidfVectorizer,73.23,73.64,73.23,73.35,66.74,72.16,69.35,2828,993,769,1993

@@ -1,0 +1,65 @@
+======================================================================
+EdgeSpam-IoT: Clean SMS Spam/Ham Dataset Preparation Audit Report
+======================================================================
+
+Generated Output File : sms_spam_cleaned_70k.csv
+Location              : C:\Users\Dell\EdgeSpam_IOT\sms_spam_cleaned_70k.csv
+Total Final Records   : 67,811
+HAM Records (0)       : 38,906 (57.37%)
+SPAM Records (1)      : 28,905 (42.63%)
+
+----------------------------------------------------------------------
+1. SOURCE DATASETS INSPECTED & COMBINED
+----------------------------------------------------------------------
+  * SMSSpamCollection        : 5,574 rows (text='1', label='0')
+  * uploaded_dataset.tsv     : 70,000 rows (text='text', label='label')
+  * Total Raw Rows Combined : 75,574
+
+----------------------------------------------------------------------
+2. DATA CLEANING & REJECTIONS
+----------------------------------------------------------------------
+  * Total Invalid/Corrupted/Non-SMS Removed: 4,800
+      - twitter_retweet                 : 3,648
+      - social_media_jargon             : 1,084
+      - excessively_long_non_sms        : 41
+      - too_short                       : 15
+      - corrupted_no_alphanumeric       : 7
+      - corrupted_question_marks        : 5
+  * Duplicates Removed Across Datasets     : 2,963
+
+----------------------------------------------------------------------
+3. DETECTED LANGUAGES / SCRIPTS
+----------------------------------------------------------------------
+  * English / Latin                           : 61,608 (90.85%)
+  * Multilingual European (French/German/Spanish): 3,584 (5.29%)
+  * Hindi / Devanagari                        : 2,619 (3.86%)
+
+----------------------------------------------------------------------
+4. DETECTED CATEGORIES
+----------------------------------------------------------------------
+  * General SMS                     : 58,836 (86.76%)
+  * Personal / Conversational       : 5,596 (8.25%)
+  * Retail / Discount Promotion     : 926 (1.37%)
+  * Subscription / Mobile Service   : 917 (1.35%)
+  * Lottery / Prize Promotion       : 562 (0.83%)
+  * Banking / Financial Alert       : 350 (0.52%)
+  * Telecom & Data Notification     : 295 (0.44%)
+  * Delivery / E-Commerce           : 274 (0.40%)
+  * Loan / Credit Offer             : 52 (0.08%)
+  * OTP / Verification Alert        : 3 (0.00%)
+
+----------------------------------------------------------------------
+5. KEY AUDIT FINDINGS (USER QUESTIONS G & H)
+----------------------------------------------------------------------
+  Question G: Whether the dataset contains only SMS data?
+  Answer    : NO. SMSSpamCollection contains 100% verified SMS data (5,157 unique).
+              However, uploaded_dataset.tsv is a hybrid dataset that historically
+              blended UCI SMS and Indian SMS with Twitter/social media and web spam.
+              While explicit retweets and social jargon have been pruned, some
+              conversational social data remains.
+
+  Question H: Whether the dataset is sufficient for 70,000 records?
+  Answer    : NO. After cleaning and deduplication, exactly 67,811 unique
+              records are available (2,189 short of 70,000).
+              In strict adherence to instructions, NO synthetic records were fabricated.
+======================================================================

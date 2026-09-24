@@ -96,7 +96,7 @@ init_database()
 # MACHINE LEARNING MODEL
 # --------------------------------------------------
 
-NUM_FEATURES = 512
+NUM_FEATURES = 2048
 
 vectorizer = HashingVectorizer(
     n_features=NUM_FEATURES,
@@ -160,6 +160,23 @@ def home():
 @app.route("/admin/")
 def admin_login():
     return render_template("admin.html")
+
+
+@app.route("/admin/login", methods=["POST", "OPTIONS"])
+@app.route("/api/admin/login", methods=["POST", "OPTIONS"])
+def admin_login_api():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"})
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "")
+
+    expected_user = os.environ.get("EDGESPAM_ADMIN_USER", "admin")
+    expected_pass = os.environ.get("EDGESPAM_ADMIN_PASS", "demo-admin-eval")
+
+    if username == expected_user and password == expected_pass:
+        return jsonify({"status": "success", "authenticated": True})
+    return jsonify({"error": "Invalid username or access key."}), 401
 
 
 @app.route("/admin/dashboard")
@@ -727,6 +744,8 @@ def vercel_index_catchall():
         return admin_preprocess_dataset()
     elif action in ["admin-train", "train"] or "train" in target:
         return admin_train_models()
+    elif action in ["admin-login", "login"] or "admin/login" in target:
+        return admin_login_api()
     elif action in ["admin-comparison", "comparison"] or "comparison" in target:
         return admin_get_comparison()
     elif action == "dashboard" or "admin/dashboard" in target:

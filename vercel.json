@@ -3,7 +3,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
-      "includeFiles": "{model.joblib,api/model.joblib,SMSSpamCollection,data/**}"
+      "includeFiles": "{model_verified_98_8.joblib,api/model_verified_98_8.joblib,model.joblib,api/model.joblib,SMSSpamCollection,data/**}"
     }
   },
   "headers": [

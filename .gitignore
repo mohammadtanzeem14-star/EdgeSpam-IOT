@@ -21,8 +21,16 @@ predictions.db
 
 # Local Backup Directories (preserve locally, do not push)
 backup_before_2048_integration/
+backup_before_verified_98_8/
 *.bak
 *.bak_*
+
+# Secrets and environment variables
+.env
+.env.*
+*.pem
+*.key
+credentials.json
 
 # Cloud deployment & Editor artifacts
 .vercel
@@ -46,3 +54,5 @@ uploaded_dataset.tsv
 sms_spam_cleaned_70k.csv
 data/sms_spam_cleaned_70k.csv
 data/sms_spam_sms_only.csv
+data/external_*
+data/*.zip

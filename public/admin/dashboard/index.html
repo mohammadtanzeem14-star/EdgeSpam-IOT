@@ -893,107 +893,113 @@
         ================================================== -->
         <div class="specs-grid">
 
-            <!-- CARD 1: PRODUCTION MODEL SPECIFICATIONS -->
+            <!-- CARD 1: PRIMARY CLOUD MODEL SPECIFICATIONS -->
             <div class="spec-card">
                 <div>
                     <div class="spec-card-header">
                         <div class="spec-card-title">
-                            <span>🚀</span> Production Model
+                            <span>🚀</span> Primary Cloud Model
                         </div>
-                        <span class="spec-badge blue">Active Edge Deployment</span>
+                        <span class="spec-badge blue">Active Production Model</span>
                     </div>
 
                     <!-- TEST ACCURACY CALLOUT BANNER -->
                     <div class="spec-callout">
                         <div class="spec-callout-label">TEST ACCURACY</div>
-                        <div class="spec-callout-value">73.05%</div>
-                        <div class="spec-callout-sub">Evaluated on 13,165 held-out test SMS (80/20 Stratified Split)</div>
+                        <div class="spec-callout-value">98.80%</div>
+                        <div class="spec-callout-sub">Evaluated on 1,841 held-out authentic SMS (80/20 Stratified Split)</div>
                     </div>
 
                     <ul class="spec-details-list">
                         <li class="spec-details-item">
                             <span class="spec-item-key">Classifier Model</span>
-                            <span class="spec-item-val" style="color: #2563eb;">SGDClassifier (Log-Loss, L1 Sparsity)</span>
+                            <span class="spec-item-val" style="color: #2563eb;">LinearSVC (C=1.0, Balanced)</span>
                         </li>
                         <li class="spec-details-item">
-                            <span class="spec-item-key">Feature Vectorizer</span>
-                            <span class="spec-item-val">HashingVectorizer</span>
+                            <span class="spec-item-key">Feature Pipeline</span>
+                            <span class="spec-item-val">FeatureUnion (Word 1-2 + Char_wb 3-5)</span>
                         </li>
                         <li class="spec-details-item">
-                            <span class="spec-item-key">Feature Dimensions</span>
-                            <span class="spec-item-val">2,048 Features</span>
+                            <span class="spec-item-key">Probability Calibration</span>
+                            <span class="spec-item-val">Platt Scaling (Fitted strictly on Train)</span>
                         </li>
                         <li class="spec-details-item">
-                            <span class="spec-item-key">Training Dataset</span>
-                            <span class="spec-item-val">65,824 SMS messages</span>
+                            <span class="spec-item-key">Training Corpus</span>
+                            <span class="spec-item-val">9,203 SMS (sms_spam_verified.csv)</span>
                         </li>
                         <li class="spec-details-item">
                             <span class="spec-item-key">Spam Recall</span>
-                            <span class="spec-item-val" style="color: #16a34a;">73.24%</span>
+                            <span class="spec-item-val" style="color: #16a34a;">96.84% (460 / 475)</span>
                         </li>
                         <li class="spec-details-item">
                             <span class="spec-item-key">Spam Precision</span>
-                            <span class="spec-item-val" style="color: #d97706;">66.15%</span>
+                            <span class="spec-item-val" style="color: #d97706;">98.50% (FP=7)</span>
                         </li>
                         <li class="spec-details-item">
                             <span class="spec-item-key">Spam F1-Score</span>
-                            <span class="spec-item-val" style="color: #7c3aed;">69.52%</span>
+                            <span class="spec-item-val" style="color: #7c3aed;">97.66%</span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="engineering-note" style="margin-top: 14px;">
-                    <strong>Hardware Target:</strong> ESP32 Microcontroller (83.64% weight sparsity, MurmurHash3 integer hashing, &lt;0.1ms edge latency).
+                    <strong>IoT Edge Companion:</strong> SGDClassifier (HashingVectorizer 2048, 80.42% weight sparsity, 95.44% test accuracy, 91.46% F1) exported to <code>model_weights.h</code> for ESP32 microcontrollers (&lt;0.1ms edge latency).
                 </div>
             </div>
 
-            <!-- CARD 2: AUTHORITATIVE TRAINING DATASET INFORMATION -->
+            <!-- CARD 2: AUTHORITATIVE VERIFIED DATASET INFORMATION -->
             <div class="spec-card">
                 <div>
                     <div class="spec-card-header">
                         <div class="spec-card-title">
-                            <span>📋</span> Training Dataset Information
+                            <span>📋</span> Verified SMS Training Corpus
                         </div>
-                        <span class="spec-badge green">Authoritative Corpus</span>
+                        <span class="spec-badge green">Clean & Audited</span>
                     </div>
 
                     <p style="font-size: 13px; color: #64748b; margin-bottom: 14px; line-height: 1.4;">
-                        Authoritative offline training corpus utilized for model training, feature extraction, and algorithm evaluation.
+                        Authoritative curated offline SMS corpus with zero duplicates, zero conflicting labels, and zero synthetic text.
                     </p>
 
                     <div class="stats-grid" style="margin-top: 0; margin-bottom: 12px; grid-template-columns: repeat(2, 1fr);">
                         <div class="stat-box highlight">
                             <div class="stat-box-title">Dataset File</div>
-                            <div class="stat-box-value" style="font-size: 12px; word-break: break-all;">sms_spam_sms_only.csv</div>
+                            <div class="stat-box-value" style="font-size: 12px; word-break: break-all;">sms_spam_verified.csv</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Total Records</div>
-                            <div class="stat-box-value">65,824</div>
+                            <div class="stat-box-value">9,203</div>
                         </div>
                         <div class="stat-box ham">
                             <div class="stat-box-title">HAM (Legit)</div>
-                            <div class="stat-box-value">38,205 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(58.0%)</span></div>
+                            <div class="stat-box-value">6,827 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(74.2%)</span></div>
                         </div>
                         <div class="stat-box spam">
                             <div class="stat-box-title">SPAM (Fraud)</div>
-                            <div class="stat-box-value">27,619 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(42.0%)</span></div>
+                            <div class="stat-box-value">2,376 <span style="font-size: 11px; font-weight: normal; color: #64748b;">(25.8%)</span></div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-box-title">Feature Dims</div>
-                            <div class="stat-box-value" style="color: #2563eb;">2,048</div>
+                            <div class="stat-box-title">Held-out Test Split</div>
+                            <div class="stat-box-value" style="color: #2563eb;">1,841 SMS</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-box-title">Duplicates / Missing</div>
+                            <div class="stat-box-title">Duplicates / Conflicts</div>
                             <div class="stat-box-value" style="color: #16a34a;">0 / 0</div>
                         </div>
                     </div>
                 </div>
 
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #475569; margin-top: 10px;">
-                    <strong>Academic Scope:</strong> 100% verified SMS messages spanning banking OTPs, telecom notices, courier alerts, personal texts, and promotional fraud.
+                    <strong>Academic Scope:</strong> Curated from UCI SMS Spam Collection (5,572), Indian Telecom SMS (2,267), and Crowdsourced Indian SMS (2,000) datasets with strict deduplication and zero synthetic artifacts.
                 </div>
             </div>
 
+        </div>
+
+        <!-- HISTORICAL REFERENCE CALLOUT -->
+        <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; padding: 14px 18px; margin-bottom: 28px; font-size: 13px; color: #475569; line-height: 1.5;">
+            <strong>📜 Historical Scraped Benchmark Reference:</strong>
+            The earlier 65,824-message scraped corpus (<code>sms_spam_sms_only.csv</code>) achieved <strong>73.05% test accuracy</strong> on SGDClassifier (and 83.34% on LinearSVC) due to 1,573 conflicting labels (identical text labeled both HAM and SPAM) and Twitter/web noise documented in <code>dataset_quality_audit.csv</code>. Retained as an academic reference artifact.
         </div>
 
         <!-- ==================================================
@@ -1030,7 +1036,7 @@
             <!-- MODULE 1: UPLOAD DATASET -->
             <div id="panelStep1" class="step-panel active">
                 <p class="panel-desc">
-                    Inspect the authoritative training dataset or upload custom CSV/TSV SMS messages for evaluation. Default production training dataset is <code>sms_spam_sms_only.csv</code> (65,824 records, 2,048 features).
+                    Inspect the verified training dataset or upload custom CSV/TSV SMS messages for evaluation. Default verified training corpus is <code>sms_spam_verified.csv</code> (9,203 authentic records, 0 duplicates, 0 synthetic).
                 </p>
 
                 <div class="file-dropzone">
@@ -1042,7 +1048,7 @@
 
                 <div class="btn-group">
                     <button id="btnLoadAuth" class="btn-primary" onclick="handleLoadAuthoritativeDataset()">
-                        📁 Load Authoritative Dataset (sms_spam_sms_only.csv - 65,824 records)
+                        📁 Load Verified Dataset (sms_spam_verified.csv - 9,203 records)
                     </button>
                     <button id="btnUploadFile" class="btn-secondary" onclick="handleFileUpload()">
                         📤 Upload Custom File
@@ -1056,23 +1062,23 @@
                     <div class="stats-grid">
                         <div class="stat-box highlight">
                             <div class="stat-box-title">Dataset File</div>
-                            <div class="stat-box-value" id="dispFilename" style="font-size: 13px; word-break: break-all;">sms_spam_sms_only.csv</div>
+                            <div class="stat-box-value" id="dispFilename" style="font-size: 13px; word-break: break-all;">sms_spam_verified.csv</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Total Records</div>
-                            <div class="stat-box-value" id="dispTotalRecords">65,824</div>
+                            <div class="stat-box-value" id="dispTotalRecords">9,203</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Columns</div>
-                            <div class="stat-box-value" id="dispNumCols">2 (label, message)</div>
+                            <div class="stat-box-value" id="dispNumCols">2 (label, text)</div>
                         </div>
                         <div class="stat-box ham">
                             <div class="stat-box-title">HAM Samples</div>
-                            <div class="stat-box-value" id="dispHamCount">38,205</div>
+                            <div class="stat-box-value" id="dispHamCount">6,827</div>
                         </div>
                         <div class="stat-box spam">
                             <div class="stat-box-title">SPAM Samples</div>
-                            <div class="stat-box-value" id="dispSpamCount">27,619</div>
+                            <div class="stat-box-value" id="dispSpamCount">2,376</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Duplicates</div>
@@ -1095,7 +1101,7 @@
             <!-- MODULE 2: PREPROCESS DATASET -->
             <div id="panelStep2" class="step-panel">
                 <p class="panel-desc">
-                    Normalize column headers, map text labels (<code>ham &rarr; 0</code>, <code>spam &rarr; 1</code>), lowercase text, and extract a <strong>2,048-dimensional sparse feature representation</strong> using <strong>HashingVectorizer</strong> (L2-norm, non-negative signs).
+                    Normalize column headers, map text labels (<code>ham &rarr; 0</code>, <code>spam &rarr; 1</code>), lowercase text, and extract feature representations for both cloud FeatureUnion and <strong>2,048-dimensional edge HashingVectorizer</strong>.
                 </p>
 
                 <div class="btn-group">
@@ -1111,19 +1117,19 @@
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div class="stat-box-title">Original Samples</div>
-                            <div class="stat-box-value" id="dispPrepOrig">65,824</div>
+                            <div class="stat-box-value" id="dispPrepOrig">9,203</div>
                         </div>
                         <div class="stat-box highlight">
                             <div class="stat-box-title">Cleaned Samples</div>
-                            <div class="stat-box-value" id="dispPrepProcessed">65,824</div>
+                            <div class="stat-box-value" id="dispPrepProcessed">9,203</div>
                         </div>
                         <div class="stat-box ham">
                             <div class="stat-box-title">HAM (Class 0)</div>
-                            <div class="stat-box-value" id="dispPrepHam">38,205</div>
+                            <div class="stat-box-value" id="dispPrepHam">6,827</div>
                         </div>
                         <div class="stat-box spam">
                             <div class="stat-box-title">SPAM (Class 1)</div>
-                            <div class="stat-box-value" id="dispPrepSpam">27,619</div>
+                            <div class="stat-box-value" id="dispPrepSpam">2,376</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Duplicates</div>
@@ -1135,12 +1141,12 @@
                         </div>
                         <div class="stat-box">
                             <div class="stat-box-title">Feature Dims</div>
-                            <div class="stat-box-value" id="dispPrepDims" style="color: #2563eb;">65,824 × 2,048</div>
+                            <div class="stat-box-value" id="dispPrepDims" style="color: #2563eb;">9,203 × 2,048</div>
                         </div>
                     </div>
 
                     <div class="engineering-note">
-                        <strong>Feature Engineering Specs:</strong> Extracted using token pattern <code>(?u)\b\w\w+\b</code>, L2 Euclidean normalization, and <strong>2,048 hash buckets</strong> to ensure complete portability to low-memory <strong>ESP32 Microcontrollers</strong>.
+                        <strong>Feature Engineering Specs:</strong> Cloud model utilizes <strong>FeatureUnion</strong> (Word TF-IDF 1-2 ngrams + Char_wb 3-5 ngrams). Edge model extracts <strong>2,048 hash buckets</strong> via MurmurHash3 integer hashing to fit within ESP32 microcontrollers.
                     </div>
 
                     <div style="text-align: right; margin-top: 15px;">
@@ -1154,12 +1160,12 @@
             <!-- MODULE 3: APPLY ALGORITHM -->
             <div id="panelStep3" class="step-panel">
                 <p class="panel-desc">
-                    Train and evaluate four distinct classification models on the 2,048-dimensional feature vectors using a reproducible <strong>stratified 80/20 train/test split</strong> (Random State = 42).
+                    Train and evaluate candidate models on the verified dataset using a reproducible <strong>stratified 80/20 train/test split</strong> (Random State = 42).
                 </p>
 
                 <div class="btn-group">
                     <button id="btnTrainModels" class="btn-primary" onclick="handleTrainModels()">
-                        🚀 Train & Evaluate 4 Algorithms
+                        🚀 Train & Evaluate Algorithms
                     </button>
                 </div>
 
@@ -1168,7 +1174,7 @@
                 <!-- EVALUATION TABLE -->
                 <div id="trainResultsBox" style="display: block;">
                     <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">
-                        Evaluation Split: <strong id="dispTrainCount">52,659</strong> Training Samples | <strong id="dispTestCount">13,165</strong> Test Samples
+                        Evaluation Split: <strong id="dispTrainCount">7,362</strong> Training Samples | <strong id="dispTestCount">1,841</strong> Test Samples
                     </div>
 
                     <div class="table-responsive">
@@ -1186,40 +1192,58 @@
                             </thead>
                             <tbody id="algoTableBody">
                                 <tr>
-                                    <td><strong>SGDClassifier</strong><span class="live-tag">Live Model</span><span class="best-tag">★ Best Edge Fit</span></td>
-                                    <td class="metric-val" style="color: #2563eb;">73.05%</td>
-                                    <td class="metric-val" style="color: #f59e0b;">66.15%</td>
-                                    <td class="metric-val" style="color: #10b981;">73.24%</td>
-                                    <td class="metric-val" style="color: #8b5cf6;">69.52%</td>
-                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>2,786</b> | FP: <b>1,035</b><br>FN: <b>739</b> | TP: <b>2,023</b></span></td>
-                                    <td style="color: #64748b; font-size: 12px;">455.4 ms</td>
+                                    <td><strong>FeatureUnion (Word+Char) + LinearSVC</strong><span class="live-tag">Live Model</span></td>
+                                    <td class="metric-val" style="color: #2563eb;">98.80%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">98.50%</td>
+                                    <td class="metric-val" style="color: #10b981;">96.84%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">97.66%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,359</b> | FP: <b>7</b><br>FN: <b>15</b> | TP: <b>460</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">250.0 ms</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Logistic Regression</strong></td>
-                                    <td class="metric-val">71.09%</td>
-                                    <td class="metric-val" style="color: #f59e0b;">63.99%</td>
-                                    <td class="metric-val" style="color: #10b981;">71.11%</td>
-                                    <td class="metric-val" style="color: #8b5cf6;">67.36%</td>
-                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>2,716</b> | FP: <b>1,105</b><br>FN: <b>798</b> | TP: <b>1,964</b></span></td>
-                                    <td style="color: #64748b; font-size: 12px;">339.8 ms</td>
+                                    <td><strong>LinearSVC (Char_wb 3-5)</strong></td>
+                                    <td class="metric-val">98.75%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">98.92%</td>
+                                    <td class="metric-val" style="color: #10b981;">96.21%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">97.55%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,361</b> | FP: <b>5</b><br>FN: <b>18</b> | TP: <b>457</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">170.0 ms</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Linear SVM</strong></td>
-                                    <td class="metric-val">71.08%</td>
-                                    <td class="metric-val" style="color: #f59e0b;">63.87%</td>
-                                    <td class="metric-val" style="color: #10b981;">71.54%</td>
-                                    <td class="metric-val" style="color: #8b5cf6;">67.49%</td>
-                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>2,703</b> | FP: <b>1,118</b><br>FN: <b>786</b> | TP: <b>1,976</b></span></td>
-                                    <td style="color: #64748b; font-size: 12px;">469.1 ms</td>
+                                    <td><strong>LinearSVC (Word 1-2)</strong></td>
+                                    <td class="metric-val">98.26%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">97.23%</td>
+                                    <td class="metric-val" style="color: #10b981;">96.00%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">96.61%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,353</b> | FP: <b>13</b><br>FN: <b>19</b> | TP: <b>456</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">50.0 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Logistic Regression (Word 1-2)</strong></td>
+                                    <td class="metric-val">98.04%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">97.82%</td>
+                                    <td class="metric-val" style="color: #10b981;">94.53%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">96.15%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,356</b> | FP: <b>10</b><br>FN: <b>26</b> | TP: <b>449</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">110.0 ms</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Multinomial Naive Bayes</strong></td>
-                                    <td class="metric-val">69.31%</td>
-                                    <td class="metric-val" style="color: #f59e0b;">71.67%</td>
-                                    <td class="metric-val" style="color: #10b981;">44.42%</td>
-                                    <td class="metric-val" style="color: #8b5cf6;">54.85%</td>
-                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>3,336</b> | FP: <b>485</b><br>FN: <b>1,535</b> | TP: <b>1,227</b></span></td>
-                                    <td style="color: #64748b; font-size: 12px;">24.7 ms</td>
+                                    <td class="metric-val">97.83%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">97.59%</td>
+                                    <td class="metric-val" style="color: #10b981;">93.89%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">95.71%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,355</b> | FP: <b>11</b><br>FN: <b>29</b> | TP: <b>446</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">12.0 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SGDClassifier (Hashing 2048 - Edge Model)</strong><span class="best-tag">★ Best Edge Fit</span></td>
+                                    <td class="metric-val" style="color: #2563eb;">95.44%</td>
+                                    <td class="metric-val" style="color: #f59e0b;">88.41%</td>
+                                    <td class="metric-val" style="color: #10b981;">94.74%</td>
+                                    <td class="metric-val" style="color: #8b5cf6;">91.46%</td>
+                                    <td><span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>1,307</b> | FP: <b>59</b><br>FN: <b>25</b> | TP: <b>450</b></span></td>
+                                    <td style="color: #64748b; font-size: 12px;">30.0 ms</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1236,7 +1260,7 @@
             <!-- MODULE 4: VIEW COMPARISON GRAPH -->
             <div id="panelStep4" class="step-panel">
                 <p class="panel-desc">
-                    Comparative visual representation of Test Accuracy, Precision, Recall, and F1-Score across all evaluated classification models on the 2,048-feature dataset.
+                    Comparative visual representation of Test Accuracy, Precision, Recall, and F1-Score across all evaluated classification models on the verified dataset.
                 </p>
 
                 <div id="graphStatus" class="status-alert"></div>
@@ -1273,25 +1297,25 @@
                     <!-- NUMERICAL SUMMARY CARDS -->
                     <div class="stats-grid" id="bestModelCardBox">
                         <div class="stat-box highlight">
-                            <div class="stat-box-title">Selected Model</div>
-                            <div class="stat-box-value" id="dispBestModelName" style="font-size: 15px;">SGDClassifier</div>
+                            <div class="stat-box-title">Selected Cloud Model</div>
+                            <div class="stat-box-value" id="dispBestModelName" style="font-size: 14px;">LinearSVC (Word+Char)</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-box-title">Test Accuracy</div>
-                            <div class="stat-box-value" style="color: #2563eb;">73.05%</div>
+                            <div class="stat-box-title">Cloud Test Accuracy</div>
+                            <div class="stat-box-value" style="color: #2563eb;">98.80%</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-box-title">Spam F1-Score</div>
-                            <div class="stat-box-value" id="dispBestF1" style="color: #8b5cf6;">69.52%</div>
+                            <div class="stat-box-title">Cloud F1-Score</div>
+                            <div class="stat-box-value" id="dispBestF1" style="color: #8b5cf6;">97.66%</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-box-title">Edge Target</div>
-                            <div class="stat-box-value" style="font-size: 15px; color: #16a34a;">ESP32 MCU</div>
+                            <div class="stat-box-title">Edge Model (ESP32)</div>
+                            <div class="stat-box-value" style="font-size: 14px; color: #16a34a;">95.44% Acc / 91.46% F1</div>
                         </div>
                     </div>
 
                     <div class="engineering-note">
-                        <strong>Academic Project Note:</strong> <strong>SGDClassifier (L1 Sparsity)</strong> is uniquely chosen for EdgeSpam-IoT hardware deployment because its L1 penalty induces 83.64% weight sparsity (1,713 zeros / 2,048 coefficients), enabling the model to execute directly within resource-constrained ESP32 IoT RAM in under 0.1ms with 73.05% TEST ACCURACY.
+                        <strong>Academic Project Architecture:</strong> EdgeSpam-IoT deploys <strong>LinearSVC + FeatureUnion (Word+Char)</strong> as its primary cloud model achieving <strong>98.80% test accuracy</strong> on 1,841 unseen test SMS. For microcontroller deployment, <strong>SGDClassifier (Hashing 2048)</strong> achieves <strong>95.44% test accuracy</strong> with 80.42% weight sparsity, fitting completely within the 520 KB SRAM of ESP32 IoT nodes in under 0.1ms.
                     </div>
                 </div>
             </div>
@@ -1352,7 +1376,7 @@
                             <tr>
                                 <th>SMS Message</th>
                                 <th>Classification</th>
-                                <th>Probability</th>
+                                <th>Confidence / Score</th>
                                 <th>Date & Time</th>
                             </tr>
                         </thead>
@@ -1376,7 +1400,7 @@
                             <tr>
                                 <th>SMS Message</th>
                                 <th>Classification</th>
-                                <th>Probability</th>
+                                <th>Confidence / Score</th>
                                 <th>Date & Time</th>
                             </tr>
                         </thead>
@@ -1469,7 +1493,7 @@
             const btn = document.getElementById("btnLoadAuth");
             if (btn) btn.disabled = true;
             statusDiv.className = "status-alert info";
-            statusDiv.textContent = "Loading authoritative dataset (sms_spam_sms_only.csv - 65,824 records)...";
+            statusDiv.textContent = "Loading verified dataset (sms_spam_verified.csv - 9,203 records)...";
 
             try {
                 const res = await fetchAPI("/admin/upload-dataset", {
@@ -1480,12 +1504,12 @@
                 const data = await res.json();
                 if (!res.ok) {
                     statusDiv.className = "status-alert error";
-                    statusDiv.textContent = data.error || "Failed to load authoritative dataset.";
+                    statusDiv.textContent = data.error || "Failed to load verified dataset.";
                     return;
                 }
 
                 statusDiv.className = "status-alert success";
-                statusDiv.textContent = "✓ " + (data.message || "Authoritative dataset loaded successfully (65,824 records).");
+                statusDiv.textContent = "✓ " + (data.message || "Verified dataset loaded successfully (9,203 records).");
 
                 displayUploadStats(data);
                 document.getElementById("tabStep1").classList.add("completed");
@@ -1564,7 +1588,7 @@
 
             btn.disabled = true;
             statusDiv.className = "status-alert info";
-            statusDiv.textContent = "Executing data cleaning, label mapping & 2,048-feature HashingVectorizer...";
+            statusDiv.textContent = "Executing data cleaning, label mapping & feature extraction...";
 
             try {
                 const res = await fetchAPI("/admin/preprocess", { method: "POST" });
@@ -1576,7 +1600,7 @@
                 }
 
                 statusDiv.className = "status-alert success";
-                statusDiv.textContent = "✓ " + (data.message || "Dataset preprocessed successfully into 2,048-dimensional feature vectors.");
+                statusDiv.textContent = "✓ " + (data.message || "Dataset preprocessed successfully.");
 
                 document.getElementById("dispPrepOrig").textContent = data.original_records.toLocaleString();
                 document.getElementById("dispPrepProcessed").textContent = data.processed_records.toLocaleString();
@@ -1608,7 +1632,7 @@
 
             btn.disabled = true;
             statusDiv.className = "status-alert info";
-            statusDiv.textContent = "Evaluating SGDClassifier, Multinomial Naive Bayes, Logistic Regression & Linear SVM on stratified 80/20 split (52,659 Train / 13,165 Test samples)...";
+            statusDiv.textContent = "Evaluating classification models on stratified 80/20 split (7,362 Train / 1,841 Test samples)...";
 
             try {
                 const res = await fetchAPI("/admin/train", { method: "POST" });
@@ -1624,8 +1648,8 @@
 
                 const data = json.data;
                 const dinfo = data.dataset || {};
-                const trainCnt = data.train_samples ?? dinfo.train_samples ?? 52659;
-                const testCnt = data.test_samples ?? dinfo.test_samples ?? 13165;
+                const trainCnt = data.train_samples ?? dinfo.train_samples ?? 7362;
+                const testCnt = data.test_samples ?? dinfo.test_samples ?? 1841;
                 document.getElementById("dispTrainCount").textContent = trainCnt.toLocaleString();
                 document.getElementById("dispTestCount").textContent = testCnt.toLocaleString();
 
@@ -1639,13 +1663,17 @@
                     if (m.is_live_model) {
                         nameHtml += `<span class="live-tag">Live Model</span>`;
                     }
-                    if (m.name === data.best_model) {
+                    if (m.is_edge_model || m.name.includes("Edge Model") || m.name === data.best_model) {
                         nameHtml += `<span class="best-tag">★ Best Edge Fit</span>`;
                     }
 
                     let cmHtml = "-";
-                    if (m.confusion_matrix) {
-                        cmHtml = `<span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>${m.confusion_matrix.tn.toLocaleString()}</b> | FP: <b>${m.confusion_matrix.fp.toLocaleString()}</b><br>FN: <b>${m.confusion_matrix.fn.toLocaleString()}</b> | TP: <b>${m.confusion_matrix.tp.toLocaleString()}</b></span>`;
+                    const tn = m.tn !== undefined ? m.tn : m.confusion_matrix?.tn;
+                    const fp = m.fp !== undefined ? m.fp : m.confusion_matrix?.fp;
+                    const fn = m.fn !== undefined ? m.fn : m.confusion_matrix?.fn;
+                    const tp = m.tp !== undefined ? m.tp : m.confusion_matrix?.tp;
+                    if (tn !== undefined && fp !== undefined && fn !== undefined && tp !== undefined) {
+                        cmHtml = `<span style="font-family: monospace; font-size: 11px; color: #475569;">TN: <b>${tn.toLocaleString()}</b> | FP: <b>${fp.toLocaleString()}</b><br>FN: <b>${fn.toLocaleString()}</b> | TP: <b>${tp.toLocaleString()}</b></span>`;
                     }
 
                     tr.innerHTML = `
@@ -1688,7 +1716,7 @@
                     }
                 }
                 statusDiv.className = "status-alert info";
-                statusDiv.textContent = "Click 'Train & Evaluate 4 Algorithms' in Step 3 to generate the live comparison graph.";
+                statusDiv.textContent = "Click 'Train & Evaluate Algorithms' in Step 3 to generate the live comparison graph.";
             } catch (e) {
                 console.error("Comparison load note:", e);
             }
@@ -1833,7 +1861,9 @@
 
                 const probabilityCell = document.createElement("td");
                 const prob = item.probability ?? item.spam_probability ?? 0;
-                probabilityCell.textContent = prob + "%";
+                const score = (item.decision_score !== undefined && item.decision_score !== null) ? 
+                    ` (${item.decision_score > 0 ? '+' : ''}${typeof item.decision_score === 'number' ? item.decision_score.toFixed(2) : item.decision_score})` : '';
+                probabilityCell.textContent = prob + "%" + score;
 
                 const timeCell = document.createElement("td");
                 timeCell.textContent = item.timestamp;

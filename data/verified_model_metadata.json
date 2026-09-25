@@ -1,0 +1,65 @@
+{
+  "model_filename": "model_verified_98_8.joblib",
+  "model_version": "v2.0-verified",
+  "training_date": "2026-09-25 11:27:37",
+  "dataset_name": "sms_spam_verified.csv",
+  "dataset_size": 9203,
+  "class_counts": {
+    "HAM": 6827,
+    "SPAM": 2376,
+    "ham_percentage": 74.18,
+    "spam_percentage": 25.82
+  },
+  "model_configuration": {
+    "architecture": "Pipeline(FeatureUnion(Word TF-IDF 1-2 + Char_wb TF-IDF 3-5) + LinearSVC)",
+    "word_ngram_range": [
+      1,
+      2
+    ],
+    "word_min_df": 2,
+    "word_sublinear_tf": true,
+    "char_ngram_range": [
+      3,
+      5
+    ],
+    "char_analyzer": "char_wb",
+    "char_min_df": 5,
+    "char_sublinear_tf": true,
+    "classifier": "LinearSVC",
+    "C": 1.0,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "data_split": {
+    "split_type": "Stratified train_test_split",
+    "test_size": 0.2,
+    "train_samples": 7362,
+    "test_samples": 1841,
+    "random_state": 42
+  },
+  "metrics": {
+    "test_accuracy": 98.8,
+    "spam_precision": 98.5,
+    "spam_recall": 96.84,
+    "spam_f1": 97.66,
+    "confusion_matrix": {
+      "TN": 1359,
+      "FP": 7,
+      "FN": 15,
+      "TP": 460
+    }
+  },
+  "calibration": {
+    "method": "Out-of-Fold 5-Fold Stratified Cross-Validation on Training Portion Only",
+    "samples_used": 7362,
+    "held_out_test_samples_used": 0,
+    "test_data_untouched": true,
+    "scaling_type": "Platt Scaling (Logistic Regression on OOF decision scores)",
+    "slope_A": 5.973106,
+    "intercept_B": 0.250125,
+    "formula": "P(spam=1 | d) = 1 / (1 + exp(-(5.973106 * d(x) + 0.250125)))",
+    "brier_score_oof": 0.0113,
+    "ui_display_term": "Calibrated Confidence"
+  },
+  "verification_status": "VERIFIED_GENUINE_NO_LEAKAGE"
+}

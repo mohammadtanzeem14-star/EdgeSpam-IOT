@@ -1,0 +1,69 @@
+=====================================================================================
+EDGESPAM-IOT: DATASET QUALITY AUDIT REPORT
+Target Dataset: sms_spam_sms_only.csv (65,824 records)
+Audit Date    : 2026-09-25 10:58:23
+=====================================================================================
+
+1. CLASS DISTRIBUTION & INTEGRITY
+-------------------------------------------------------------------------------------
+  * Total SMS Records    : 65,824
+  * Legitimate HAM (0)   : 38,205 (58.04%)
+  * Spam/Malicious (1)   : 27,619 (41.96%)
+  * Exact String Dups    : 0 (Strictly 0 raw exact duplicate lines)
+  * Case/Punct Normal Dups: 2,042 (Records identical after lowercasing & punct removal)
+
+2. CONTRADICTORY LABELS (GROUND-TRUTH CONFLICTS)
+-------------------------------------------------------------------------------------
+  * Conflicting Normalized Texts : 9 distinct texts
+  * Affected Rows in Dataset     : 1,573 rows
+  * Empirical Examples of Exact Semantic Conflicts:
+    - Text: ""
+      Distribution: 1481 HAM vs 25 SPAM (Identical message with contradictory labels!)
+    - Text: "1"
+      Distribution: 4 HAM vs 1 SPAM (Identical message with contradictory labels!)
+    - Text: "2"
+      Distribution: 33 HAM vs 1 SPAM (Identical message with contradictory labels!)
+    - Text: "3"
+      Distribution: 6 HAM vs 1 SPAM (Identical message with contradictory labels!)
+
+3. SURVIVED NON-SMS & SOCIAL MEDIA ARTIFACTS
+-------------------------------------------------------------------------------------
+  * Twitter @-handles          : 87
+  * Social Media #-hashtags    : 87
+  * Web URLs / Link Shorteners : 472
+  * Social Media Platform Jargon: 93
+  * News Wire / Blog Marketing  : 1
+  * Total Suspicious / Flagged  : 2,311 records cataloged in dataset_quality_audit.csv
+
+4. CONVERSATIONAL KEYWORD LABEL OVERLAP (BAYES NOISE ANALYSIS)
+-------------------------------------------------------------------------------------
+  Everyday conversational words show inconsistent label assignments across the corpus:
+    - 'vacation  ':   31 messages | HAM:    5 (16.1%), SPAM:   26 (83.9%)
+    - 'yoga      ':   19 messages | HAM:   10 (52.6%), SPAM:    9 (47.4%)
+    - 'birthday  ':  161 messages | HAM:   93 (57.8%), SPAM:   68 (42.2%)
+    - 'coffee    ':  218 messages | HAM:  113 (51.8%), SPAM:  105 (48.2%)
+    - 'dinner    ':  189 messages | HAM:  115 (60.9%), SPAM:   74 (39.1%)
+    - 'sleep     ':  197 messages | HAM:  127 (64.5%), SPAM:   70 (35.5%)
+    - 'morning   ':  432 messages | HAM:  245 (56.7%), SPAM:  187 (43.3%)
+    - 'night     ':  581 messages | HAM:  357 (61.5%), SPAM:  224 (38.5%)
+    - 'tomorrow  ':  394 messages | HAM:  229 (58.1%), SPAM:  165 (41.9%)
+
+5. REPEATED MESSAGE TEMPLATES
+-------------------------------------------------------------------------------------
+  High-frequency repeated prefixes (templates with variable suffixes):
+    - "i uploaded a youtube video" (51 occurrences)
+    - "i rated a youtube video" (37 occurrences)
+    - "i favorited a youtube video" (34 occurrences)
+    - "xbox live arkiledotcom is currently" (28 occurrences)
+    - "rated shenzhen and shekou party" (18 occurrences)
+    - "just added myself to the" (18 occurrences)
+    - "http movapic com pic b" (17 occurrences)
+    - "urgent! your mobile number has" (15 occurrences)
+
+6. AUDIT CONCLUSION & RECOMMENDATION
+-------------------------------------------------------------------------------------
+  1. The dataset contains 1,573 rows with direct label contradictions (identical text labeled both 0 and 1).
+  2. An estimated ~16% of the remaining records contain ambient label noise from web/Twitter scraping.
+  3. To achieve genuine, legitimate, leak-free test accuracy >= 90%, the evaluation pipeline must utilize
+     verified SMS datasets where labels are rigorously documented by primary sources.
+=====================================================================================

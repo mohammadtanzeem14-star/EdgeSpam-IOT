@@ -1,0 +1,269 @@
+{
+  "dataset_path": "C:\\Users\\Dell\\EdgeSpam_IOT\\data\\sms_spam_sms_only.csv",
+  "total_records": 65824,
+  "class_distribution": {
+    "ham_count": 38205,
+    "spam_count": 27619,
+    "ham_pct": 58.04,
+    "spam_pct": 41.96
+  },
+  "exact_duplicates": 0,
+  "normalized_duplicates": 2042,
+  "cross_label_conflicts": {
+    "distinct_conflicting_texts": 9,
+    "total_rows_involved": 1573,
+    "sample_conflicts": [
+      {
+        "normalized_text": "",
+        "rows": [
+          {
+            "index": 5157,
+            "message": "\u092e\u0941\u091d\u0947 \u092a\u0924\u093e \u0939\u0948 \u0916\u093e\u0924\u0947 \u0915\u0940 \u091c\u093e\u0928\u0915\u093e\u0930\u0940\u0964 \u092e\u0947\u0930\u0940 \u092e\u093e\u0901 \u0905\u092c \u0924\u0915 \u092a\u0939\u0941\u0901\u091a \u0915\u0947 \u092c\u093e\u0939\u0930 \u0939\u0948\u0964",
+            "label": 0
+          },
+          {
+            "index": 5200,
+            "message": "\u0920\u0940\u0915 \u0939\u0948, \u092e\u0947\u0930\u0947 \u092a\u094d\u092f\u093e\u0930! \u0935\u0939 \u0926\u093f\u0928 \u0915\u0948\u0938\u0947 \u091a\u0932\u093e \u091c\u093e\u0924\u093e \u0939\u0948? \u092e\u0941\u091d\u0947 \u0906\u0936\u093e \u0939\u0948 \u0915\u093f \u0906\u092a \u0915\u0941\u091b \u0928\u094c\u0915\u0930\u0940 \u092a\u0930 \u0932\u0947 \u091c\u093e\u0924\u093e \u0939\u0948. \u092e\u0941\u091d\u0947 \u0932\u0917\u0924\u093e \u0939\u0948, \u0932\u0921\u093c\u0915\u093e \u0939\u0948 \u0914\u0930 \u0924\u0941\u092e\u094d\u0939\u0947\u0902 \u0938\u092e\u0941\u0926\u094d\u0930 \u092a\u093e\u0930 \u0938\u0947 \u090f\u0915 \u092a\u094d\u092f\u093e\u0930\u0940 \u091a\u0941\u0902\u092c\u0928 \u092d\u0947\u091c\u0947\u0902.",
+            "label": 0
+          },
+          {
+            "index": 5220,
+            "message": "\u0939\u093e\u0901, \u091c\u093e\u0939\u093f\u0930 \u0939\u0948, \u0932\u0947\u0915\u093f\u0928 \u0906\u092a \u0905\u0902\u0921\u0947 \u0926\u0947 \u0930\u0939\u0947 \u0939\u0948\u0902 \u0914\u0930 \u0938\u093f\u0930... \u091c\u0932\u094d\u0926\u0940 \u0939\u0940 \u092c\u094b\u0932\u094b!",
+            "label": 0
+          },
+          {
+            "index": 5263,
+            "message": "\u0938\u0941\u092a\u094d\u0930\u092d\u093e\u0924, \u092e\u0947\u0930\u093e \u092a\u094d\u092f\u093e\u0930... \u092e\u0948\u0902 \u0905\u092c \u0938\u094b\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u091c\u093e\u0928\u093e \u0914\u0930 \u0906\u092a \u092c\u0947\u0939\u0924\u0930 \u092e\u0939\u0938\u0942\u0938 \u0914\u0930 \u0905\u0935\u0938\u0930 \u0938\u0947 \u092d\u0930\u093e \u090f\u0915 \u092c\u0921\u093c\u093e \u0926\u093f\u0928 \u091a\u093e\u0939\u0924\u0947 \u0939\u0948\u0902... \u0924\u0941\u092e \u092e\u0947\u0930\u0940 \u0905\u0902\u0924\u093f\u092e \u0938\u094b\u091a\u093e \u092c\u091a\u094d\u091a\u093e \u0939\u0948, \u092e\u0948\u0902 \u0924\u0941\u092e\u094d\u0939\u0947\u0902 \u092a\u094d\u092f\u093e\u0930 *",
+            "label": 0
+          }
+        ]
+      },
+      {
+        "normalized_text": "1",
+        "rows": [
+          {
+            "index": 11635,
+            "message": "1 \u092e\u0940\u091f\u093f\u0902\u0917 \u0916\u0924\u094d\u092e \u0939\u094b \u0917\u092f\u093e \u0939\u0948 \u092e\u0941\u091d\u0947 \u092b\u094b\u0928.",
+            "label": 0
+          },
+          {
+            "index": 12907,
+            "message": "\u0907\u0938\u0915\u093e \u0920\u0940\u0915 \u091a\u093f\u0930\u094d\u0915\u0915\u0941, \u0914\u0930 \u0907\u0938\u0915\u0947 \u092a\u0938\u0902\u0926\u0940\u0926\u093e \u0917\u0940\u0924 \u0915\u093e \u092e\u0947\u0930\u093e 1.: -)",
+            "label": 0
+          },
+          {
+            "index": 24889,
+            "message": "\u0905\u0917\u0930 \u0939\u092e \u0907\u0938\u0915\u0947 \u0935\u093e\u0938\u094d\u0924\u0935 \u092e\u0947\u0902 \u0915\u094b\u0908 1 \u092a\u0915\u094d\u0937 \u0932\u0902\u092c\u0947 \u0938\u092e\u092f \u0915\u0947 \u0932\u093f\u090f \u091c\u0940\u0924\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f.",
+            "label": 0
+          },
+          {
+            "index": 32266,
+            "message": "1 \u0918\u0930 \u092a\u0930 \u092e\u0941\u091d\u0947 \u092b\u094b\u0928 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902.",
+            "label": 0
+          }
+        ]
+      },
+      {
+        "normalized_text": "2",
+        "rows": [
+          {
+            "index": 5431,
+            "message": "\u092e\u0948\u0902 2 \u0926\u093f\u0928 \u0915\u0947 \u0932\u093f\u090f \u0915\u0947\u0932\u093e \u0915\u0947 \u0932\u093f\u090f \u0906 \u0938\u0915\u0924\u093e \u0939\u0948. \u0907\u0938\u0932\u093f\u090f \u0906\u092a \u090f\u0915 \u091b\u0941\u091f\u094d\u091f\u0940 \u0932\u0947\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0924\u0948\u092f\u093e\u0930 \u0915\u093f\u092f\u093e \u091c\u093e \u0938\u0915\u0924\u093e \u0939\u0948 \u090f\u0915 \u092c\u093e\u0930 \u092e\u0941\u091d\u0947 \u092f\u093e\u0924\u094d\u0930\u093e \u0915\u0947 \u0926\u094c\u0930\u093e\u0928 \u0915\u093f\u0938\u0940 \u092d\u0940 \u092f\u093e\u0924\u094d\u0930\u093e \u0915\u0940 \u092f\u094b\u091c\u0928\u093e. \u0905\u0924\u094d\u092f\u093e\u0935\u0936\u094d\u200d\u092f\u0915 \u0915\u093e\u0930\u094d\u092f \u0916\u0924\u094d\u092e \u0915\u0930\u0928\u0947 \u0915\u0940 \u091c\u0930\u0942\u0930\u0924 \u0939\u0948.",
+            "label": 0
+          },
+          {
+            "index": 5759,
+            "message": "\u092f\u0939 \u0907\u0924\u0928\u093e \u0939\u094b\u0924\u093e \u0939\u0948 \u0915\u093f \u0935\u0939\u093e\u0901 2\u0935\u093e\u0915\u094d\u0938\u094b \u0906\u092a \u091a\u093e\u0939\u0924\u0947 \u0939\u0948\u0902. \u0935\u0939 \u0906\u0915\u0930 \u092c\u0940\u092e\u093e\u0930 \u0939\u094b \u0938\u0915\u0924\u093e \u0939\u0948 \u0914\u0930 \u0909\u0938\u0947 \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u093e \u092c\u0940\u092e\u093e \u092a\u094d\u0930\u093e\u092a\u094d\u0924 \u0915\u0930 \u0938\u0915\u0924\u093e \u0939\u0948. \u0914\u0930 \u0935\u0939 \u0905\u092d\u0940 \u0924\u0915 \u092c\u091a\u093e \u0938\u0915\u0924\u093e \u0939\u0948 \u0914\u0930 \u092c\u0941\u0928\u093f\u092f\u093e\u0926\u0940 \u0926\u0947\u0916 \u0938\u0915\u0924\u093e \u0939\u0948. \u092e\u0948\u0902 \u0905\u092d\u0940 \u0909\u0938\u0915\u0947 \u0932\u093f\u090f \u0938\u0939\u0940 \u091a\u093f\u0915\u093f\u0924\u094d\u0938\u093e \u092c\u0940\u092e\u093e \u0915\u0947 \u0932\u093f\u090f \u0916\u0930\u0940\u0926\u093e\u0930\u0940 \u0915\u0930 \u0930\u0939\u093e \u0939\u0942\u0901. \u0924\u094b \u092c\u0938 \u092e\u0941\u091d\u0947 \u091f\u0940\u093f\u0932\u0940 \u0926\u093f\u0928 \u0926\u0947. \u092f\u0939 \u0939\u0948 \u0915\u093f \u091c\u092c \u092e\u0948\u0902 \u092e\u0941\u0916\u094d\u092f \u0935\u094d\u092f\u0915\u094d\u0924\u093f \u0938\u0939\u0940 \u0930\u093e\u0939 \u0926\u093f\u0916\u093e \u0938\u0915\u0924\u093e \u0939\u0948 \u0915\u093f \u092e\u0941\u091d\u0947 \u0938\u0939\u0940 \u0930\u093e\u0939 \u0926\u093f\u0916\u093e \u0938\u0915\u0924\u093e \u0939\u0948.",
+            "label": 0
+          },
+          {
+            "index": 5885,
+            "message": "\u092e\u0941\u091d\u0947 \u0915\u0947\u0935\u0932 2 \u091f\u093f\u0915\u091f \u0914\u0930 \u090f\u0915 \u0914\u0930 \u091c\u0948\u0915\u0947\u091f \u091a\u093e\u0939\u093f\u090f \u0914\u0930 \u092e\u0948\u0902 \u0915\u0930 \u0930\u0939\u093e \u0939\u0942\u0901. \u092e\u0948\u0902 \u092a\u0939\u0932\u0947 \u0938\u0947 \u0939\u0940 \u0905\u092a\u0928\u0947 \u0938\u092d\u0940 \u092c\u0939\u0941\u0907\u092f\u094b\u0902 \u0915\u093e \u0909\u092a\u092f\u094b\u0917 \u0915\u0930 \u091a\u0941\u0915\u093e \u0939\u0942\u0901.",
+            "label": 0
+          },
+          {
+            "index": 6219,
+            "message": "\u0915\u093f\u0938\u0940 \u0915\u094b \u092a\u0924\u093e \u0939\u0948 \u0939\u092e\u093e\u0930\u0940 \u0921\u0947\u091f\u093f\u0902\u0917 \u0938\u0947\u0935\u093e 2 \u0938\u0947 \u0938\u0902\u092a\u0930\u094d\u0915 \u092a\u0942\u091b\u093e \u0939\u0948!",
+            "label": 1
+          }
+        ]
+      },
+      {
+        "normalized_text": "3",
+        "rows": [
+          {
+            "index": 11939,
+            "message": "\u092f\u0939 \u0936\u094d\u0930\u0940 \u0936\u0941\u0924\u0941\u0930\u092e\u0941\u0930\u094d\u0917 3 \u091a\u093e\u091f\u0924\u093e \u0932\u093f\u092f\u093e",
+            "label": 0
+          },
+          {
+            "index": 15675,
+            "message": "\u092e\u0948\u0902 3 \u092e\u093f\u0928\u091f \u092e\u0947\u0902 \u0924\u0941\u092e\u094d\u0939\u093e\u0930\u093e \u0939\u094b \u091c\u093e\u090f\u0917\u093e \u0932\u0947\u0915\u093f\u0928 \u092e\u0947\u0930\u0947 \u0932\u093f\u090f \u092c\u093e\u0939\u0930 \u0926\u0947\u0916\u094b",
+            "label": 0
+          },
+          {
+            "index": 25065,
+            "message": "\u090f\u0915 \u0905\u0902\u0917\u0942\u0920\u0940 \u092a\u0930 \u0932\u0917\u093e \u090f\u0915 \u0914\u0930 \u0905\u092c \u092a\u093e\u0920\u094b\u0902 \u0915\u0940 \u0915\u0940\u092e\u0924 3 \u092a\u093e\u0909\u0902\u0921 \u092a\u094d\u0930\u0924\u093f\u092f\u093e\u0901 \u092a\u0947\u0936 \u0915\u0940 \u091c\u093e \u0930\u0939\u0940 \u0939\u0948\u0902...",
+            "label": 1
+          },
+          {
+            "index": 46974,
+            "message": "\u0939\u093e\u0901, \u0915\u094b\u0908 \u092d\u0940 \u0915\u092d\u0940 \u092d\u0940 \u0905\u0917\u0932\u0947 \u0938\u092a\u094d\u0924\u093e\u0939 \u0924\u0941\u092e \u0905\u092a\u0928\u0940 \u092e\u093e\u0901 \u0935\u092e\u094d\u092a \u0938\u0947 \u0926\u0942\u0930 \u0939\u094b \u0938\u0915\u0924\u0947 \u0939\u0948\u0902; 3 \u0938\u0947 \u092a\u0939\u0932\u0947 \u0909\u0920\u094b",
+            "label": 0
+          }
+        ]
+      },
+      {
+        "normalized_text": "8",
+        "rows": [
+          {
+            "index": 7208,
+            "message": "\u0915\u0947 \u0932\u093f\u090f \u092e\u0948\u0902, \u090f\u0915 8 \u0935\u0940\u0902 \u0915\u0947 \u0932\u093f\u090f \u0915\u093f\u0924\u0928\u093e \u0915\u0930 \u0930\u0939\u093e \u0939\u0942\u0901?",
+            "label": 0
+          },
+          {
+            "index": 23653,
+            "message": "\u0920\u0940\u0915 \u0939\u0948, \u090f\u0915 \u0906\u0927\u093e 8 \u0935\u0940\u0902 \u0915\u0947 \u0932\u093f\u090f \u092e\u0947\u0930\u0947 \u0906\u0926\u0947\u0936 \u092c\u0926\u0932 \u0939\u094b\u0917\u093e",
+            "label": 0
+          },
+          {
+            "index": 31430,
+            "message": "\u0905\u0917\u0930 \u092e\u0948\u0902 \u0924\u0941\u092e\u094d\u0939\u0947\u0902 \u092f\u0939 \u0915\u0930\u0928\u0947 \u0926\u094b, \u092e\u0948\u0902 \u0906\u092a 8 \u092c\u091c\u0947 \u0918\u0930 \u092e\u0947\u0902 \u091a\u093e\u0939\u0924\u0947 \u0939\u0948\u0902.",
+            "label": 0
+          },
+          {
+            "index": 41300,
+            "message": "\u092e\u0948\u0902 \u090f\u0915 8 \u0935\u0940\u0902 \u0915\u0940 \u091c\u0930\u0942\u0930\u0924 \u0939\u0948 \u0932\u0947\u0915\u093f\u0928 \u092e\u0948\u0902 \u0915\u0930 \u0930\u0939\u093e \u0939\u0942\u0901, \u092e\u0948\u0902 \u090f\u0915 \u0918\u0902\u091f\u0947 \u092e\u0947\u0902 \u092f\u093e \u0926\u094b \u092e\u0947\u0902 \u0909\u0920\u093e \u0938\u0915\u0924\u093e \u0939\u0948?",
+            "label": 0
+          }
+        ]
+      }
+    ]
+  },
+  "suspicious_artifacts": {
+    "twitter_handles": 87,
+    "hashtags": 87,
+    "url_links": 472,
+    "social_media_lingo": 93,
+    "news_blog_wire": 1,
+    "total_flagged_records": 2311
+  },
+  "conversational_keyword_noise": {
+    "vacation": {
+      "total": 31,
+      "ham": 5,
+      "spam": 26,
+      "spam_pct": 83.87
+    },
+    "yoga": {
+      "total": 19,
+      "ham": 10,
+      "spam": 9,
+      "spam_pct": 47.37
+    },
+    "birthday": {
+      "total": 161,
+      "ham": 93,
+      "spam": 68,
+      "spam_pct": 42.24
+    },
+    "coffee": {
+      "total": 218,
+      "ham": 113,
+      "spam": 105,
+      "spam_pct": 48.17
+    },
+    "dinner": {
+      "total": 189,
+      "ham": 115,
+      "spam": 74,
+      "spam_pct": 39.15
+    },
+    "sleep": {
+      "total": 197,
+      "ham": 127,
+      "spam": 70,
+      "spam_pct": 35.53
+    },
+    "morning": {
+      "total": 432,
+      "ham": 245,
+      "spam": 187,
+      "spam_pct": 43.29
+    },
+    "night": {
+      "total": 581,
+      "ham": 357,
+      "spam": 224,
+      "spam_pct": 38.55
+    },
+    "tomorrow": {
+      "total": 394,
+      "ham": 229,
+      "spam": 165,
+      "spam_pct": 41.88
+    }
+  },
+  "top_repeated_templates": [
+    {
+      "template": "i uploaded a youtube video",
+      "count": 51
+    },
+    {
+      "template": "i rated a youtube video",
+      "count": 37
+    },
+    {
+      "template": "i favorited a youtube video",
+      "count": 34
+    },
+    {
+      "template": "xbox live arkiledotcom is currently",
+      "count": 28
+    },
+    {
+      "template": "rated shenzhen and shekou party",
+      "count": 18
+    },
+    {
+      "template": "just added myself to the",
+      "count": 18
+    },
+    {
+      "template": "http movapic com pic b",
+      "count": 17
+    },
+    {
+      "template": "urgent! your mobile number has",
+      "count": 15
+    },
+    {
+      "template": "new travel photo of the",
+      "count": 15
+    },
+    {
+      "template": "new the travel photo of",
+      "count": 15
+    },
+    {
+      "template": "urgent! we are trying to",
+      "count": 14
+    },
+    {
+      "template": "http www youtube com watch",
+      "count": 14
+    },
+    {
+      "template": "private! your 2003 account statement",
+      "count": 13
+    },
+    {
+      "template": "check out this video on",
+      "count": 13
+    },
+    {
+      "template": "i need to finish my",
+      "count": 13
+    }
+  ]
+}

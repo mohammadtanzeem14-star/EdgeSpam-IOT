@@ -1,77 +1,77 @@
 {
   "dataset": {
-    "filename": "sms_spam_cleaned_70000.csv",
-    "total_records": 70000,
-    "ham_count": 39475,
-    "spam_count": 30525,
-    "num_features": 512,
-    "train_samples": 56000,
-    "test_samples": 14000,
+    "filename": "sms_spam_sms_only.csv",
+    "total_records": 65824,
+    "ham_count": 38205,
+    "spam_count": 27619,
+    "num_features": 2048,
+    "train_samples": 52659,
+    "test_samples": 13165,
     "duplicate_messages": 0,
     "missing_messages": 0
   },
-  "best_model": "Linear SVM",
+  "best_model": "SGDClassifier",
   "models": [
     {
       "name": "SGDClassifier",
-      "accuracy": 69.24,
-      "precision": 63.28,
-      "recall": 70.2,
-      "f1_score": 66.56,
-      "train_time_ms": 394.17,
+      "accuracy": 73.05,
+      "precision": 66.15,
+      "recall": 73.24,
+      "f1_score": 69.52,
+      "train_time_ms": 455.4,
       "confusion_matrix": {
-        "tn": 5408,
-        "fp": 2487,
-        "fn": 1819,
-        "tp": 4286
+        "tn": 2786,
+        "fp": 1035,
+        "fn": 739,
+        "tp": 2023
       },
       "is_live_model": true
     },
     {
-      "name": "Multinomial Naive Bayes",
-      "accuracy": 66.99,
-      "precision": 66.7,
-      "recall": 48.52,
-      "f1_score": 56.17,
-      "train_time_ms": 24.71,
-      "confusion_matrix": {
-        "tn": 6416,
-        "fp": 1479,
-        "fn": 3143,
-        "tp": 2962
-      },
-      "is_live_model": false
-    },
-    {
       "name": "Logistic Regression",
-      "accuracy": 69.41,
-      "precision": 63.2,
-      "recall": 71.47,
-      "f1_score": 67.08,
-      "train_time_ms": 339.83,
+      "accuracy": 71.09,
+      "precision": 63.99,
+      "recall": 71.11,
+      "f1_score": 67.36,
+      "train_time_ms": 339.8,
       "confusion_matrix": {
-        "tn": 5355,
-        "fp": 2540,
-        "fn": 1742,
-        "tp": 4363
+        "tn": 2716,
+        "fp": 1105,
+        "fn": 798,
+        "tp": 1964
       },
       "is_live_model": false
     },
     {
       "name": "Linear SVM",
-      "accuracy": 69.44,
-      "precision": 63.09,
-      "recall": 72.1,
-      "f1_score": 67.3,
-      "train_time_ms": 469.07,
+      "accuracy": 71.08,
+      "precision": 63.87,
+      "recall": 71.54,
+      "f1_score": 67.49,
+      "train_time_ms": 469.1,
       "confusion_matrix": {
-        "tn": 5320,
-        "fp": 2575,
-        "fn": 1703,
-        "tp": 4402
+        "tn": 2703,
+        "fp": 1118,
+        "fn": 786,
+        "tp": 1976
+      },
+      "is_live_model": false
+    },
+    {
+      "name": "Multinomial Naive Bayes",
+      "accuracy": 69.31,
+      "precision": 71.67,
+      "recall": 44.42,
+      "f1_score": 54.85,
+      "train_time_ms": 24.7,
+      "confusion_matrix": {
+        "tn": 3336,
+        "fp": 485,
+        "fn": 1535,
+        "tp": 1227
       },
       "is_live_model": false
     }
   ],
-  "timestamp": "2026-09-23 19:38:04"
+  "timestamp": "2026-09-24 14:40:00"
 }
